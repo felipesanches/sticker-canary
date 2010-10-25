@@ -11,7 +11,11 @@ album = {
                " height='<% currentComposition.height %>' fill='none' stroke='#FE0'/>",
     slotImageFilter: "<SVG Filter>",
     front: "<rect width='<% currentComposition.width %>'"+
-                " height='<% currentComposition.height %>' fill='#FFF'/>",
+                " height='<% currentComposition.height %>' fill='#FFF'/>"+
+           "<image xlink:href='<% currentComposition.img %>'"+
+                 " width='<% currentComposition.width %>'"+
+                 " height='<% currentComposition.height %>'"+
+                 " transform='<% currentComposition.transform %>'/>",
     frontImageFilter: "<SVG Filter>",
     margin: "4mm"
   },
@@ -48,14 +52,14 @@ album = {
     },
     "comp2": {
       x:10,y:200,rotate:0,
-      img: "file:///home/felipe/devel/felipesanches/album_dariosan/cromo-02.png",
+      img: "file:///home/felipe/devel/felipesanches/album_dariosan/cromo-02.jpg",
       label: "Essa é a segunda",
       matrix: { rows:2 , cols:2 },
       transform: "scale(0.4) translate(-10,0)"
     },
     "comp3": {
       x:500,y:200,rotate:0,
-      img: "file:///home/felipe/devel/felipesanches/album_dariosan/cromo-03.png",
+      img: "file:///home/felipe/devel/felipesanches/album_dariosan/cromo-03.jpg",
       label: "Precisamos de uma terceira",
       matrix: { rows:1 , cols:2 },
       transform: "scale(0.4) translate(-10,0)"

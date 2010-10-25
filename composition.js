@@ -12,6 +12,7 @@ Composition.prototype.evalCompositionFrontCode = function(code) {
   var currentComposition = {
     img: this.conf.img,
     label: this.conf.label,
+    transform: this.conf.transform,
     width: stickerCanary.toUserUnit( this.stickerLayout.width ) * this.conf.matrix.cols,
     height: stickerCanary.toUserUnit( this.stickerLayout.height ) * this.conf.matrix.rows
   };
