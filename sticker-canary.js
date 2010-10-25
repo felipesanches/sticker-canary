@@ -1,7 +1,7 @@
 const stickerCanary = new Object();
 
 stickerCanary.getUnit = function(value) {
-  var unit = value.replace(/[0-9 ]/g, "");
+  var unit = value.toString().replace(/[.0-9 ]/g, "");
   if ( unit == "" ) unit = "px";
   return unit;
 }
@@ -61,14 +61,29 @@ stickerCanary.generateDoublePage = function(doublePageIndex) {
 
   // TODO: Put the dPage.svgExtras on the svg
   
-  // Put the Stickers on the page
   for ( var cName in dPage.compositions ) {
+    // Put the Slots on the page
     var composition = new Composition(cName, dPage);
     composition.generateSlot();
+    // Put the Stickers on the page
+    //...
+  }
+}
+
+stickerCanary.generateStickersNumbering = function() {
+  var counter = 1;
+  for (var dp in this.currentAlbum.doublePages){
+    var dp = this.currentAlbum.doublePages[dp];
+    for (var composition in dp.compositions){
+      var composition = dp.compositions[composition];
+      composition.baseNumber = counter;
+      counter += composition.matrix.cols * composition.matrix.rows;
+    }
   }
 }
 
 stickerCanary.loadAlbum = function(jsonAlbum) {
   this.currentAlbum = jsonAlbum;
+  this.generateStickersNumbering();  
 }
 

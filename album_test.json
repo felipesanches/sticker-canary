@@ -35,29 +35,33 @@ album = {
             "<text x='<% page.width * 2 - 30 %>'"+
                  " y='<% page.height - 30 %>'><% page.right.number %></text>",
   },
+  doublePages: [
+    { masterPage: "master",
+
   compositions: {
     "comp1": {
+      x:10,y:10,rotate:0,
       img: "file:///home/felipe/devel/felipesanches/album_dariosan/cromo-01.png",
       label: "Primeira Imagem",
       matrix: { rows:1 , cols:1 },
       transform: "scale(0.4) translate(-10,0)"
     },
     "comp2": {
+      x:10,y:200,rotate:0,
       img: "file:///home/felipe/devel/felipesanches/album_dariosan/cromo-02.png",
       label: "Essa é a segunda",
       matrix: { rows:2 , cols:2 },
       transform: "scale(0.4) translate(-10,0)"
     },
     "comp3": {
+      x:500,y:200,rotate:0,
       img: "file:///home/felipe/devel/felipesanches/album_dariosan/cromo-03.png",
       label: "Precisamos de uma terceira",
       matrix: { rows:1 , cols:2 },
       transform: "scale(0.4) translate(-10,0)"
     }
   },
-  doublePages: [
-    { masterPage: "master",
-      compositions: { "comp1":{x:10,y:10,rotate:0}, "comp2":{x:10,y:200,rotate:0}, "comp3":{x:500,y:200,rotate:0} },
+
       svgExtra: "svg fragment",
       metadata : {
         "<name>": "<value>",  // alimenta espaços da masterPage
