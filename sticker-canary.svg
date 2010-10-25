@@ -6,6 +6,7 @@
    height="1"
    version="1.1">
   <script xlink:href="album_test.json" />
+  <script xlink:href="composition.js" />
   <script xlink:href="sticker-canary.js" />
   <script>
     stickerCanary.doc = document;

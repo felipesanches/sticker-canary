@@ -58,6 +58,14 @@ stickerCanary.generateDoublePage = function(doublePageIndex) {
   while ( dom.documentElement.hasChildNodes() ) {
     svg.appendChild( dom.documentElement.firstChild );
   }
+
+  // TODO: Put the dPage.svgExtras on the svg
+  
+  // Put the Stickers on the page
+  for ( var cName in dPage.compositions ) {
+    var composition = new Composition(cName, dPage);
+    composition.generateSlot();
+  }
 }
 
 stickerCanary.loadAlbum = function(jsonAlbum) {
