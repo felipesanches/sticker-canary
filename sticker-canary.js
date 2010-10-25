@@ -66,7 +66,7 @@ stickerCanary.generateDoublePage = function(doublePageIndex) {
     var composition = new Composition(cName, dPage);
     composition.generateSlot();
     // Put the Stickers on the page
-    //...
+    composition.generateFront();
   }
 }
 
@@ -84,6 +84,6 @@ stickerCanary.generateStickersNumbering = function() {
 
 stickerCanary.loadAlbum = function(jsonAlbum) {
   this.currentAlbum = jsonAlbum;
-  this.generateStickersNumbering();  
+  this.generateStickersNumbering();
 }
 

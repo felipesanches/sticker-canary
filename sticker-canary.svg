@@ -5,6 +5,7 @@
    width="1"
    height="1"
    version="1.1">
+
   <script xlink:href="album_test.json" />
   <script xlink:href="composition.js" />
   <script xlink:href="sticker-canary.js" />
@@ -12,5 +13,28 @@
     stickerCanary.doc = document;
     stickerCanary.loadAlbum(album);
     stickerCanary.generateDoublePage(0);
+  </script>
+
+  <circle r="5" cx="10" cy="10" id="show-stickers" fill="green" />
+  <circle r="5" cx="25" cy="10" id="hide-stickers" fill="red" />
+
+  <script>
+    document.getElementById("show-stickers").onclick = function(){
+      var groups = document.getElementsByTagName("g");
+      for (var g in groups){
+        g = groups[g];
+        if (g.className.baseVal == "composition-front")
+          g.setAttribute("visibility", "visible");
+      }
+    }
+    
+    document.getElementById("hide-stickers").onclick = function(){
+      var groups = document.getElementsByTagName("g");
+      for (var g in groups){
+        g = groups[g];
+        if (g.className.baseVal == "composition-front")
+          g.setAttribute("visibility", "hidden");
+      }
+    }
   </script>
 </svg>

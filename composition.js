@@ -8,6 +8,16 @@ function Composition(cName, dPage) {
   this.stickerLayout.height = stickerCanary.toUserUnit(this.stickerLayout.height);
 }
 
+Composition.prototype.evalCompositionFrontCode = function(code) {
+  var currentComposition = {
+    img: this.conf.img,
+    label: this.conf.label,
+    width: stickerCanary.toUserUnit( this.stickerLayout.width ) * this.conf.matrix.cols,
+    height: stickerCanary.toUserUnit( this.stickerLayout.height ) * this.conf.matrix.rows
+  };
+  return eval(code);
+}
+
 Composition.prototype.evalCompositionCode = function(code) {
   var currentComposition = {
     width: stickerCanary.toUserUnit( this.stickerLayout.width ) * this.conf.matrix.cols,
@@ -77,7 +87,24 @@ Composition.prototype.generateSlot = function() {
 }
 
 Composition.prototype.generateFront = function() {
-  
+  var svg = stickerCanary.doc.documentElement;
+  var self = this;
+  var svgCode = this.compositionLayout.front.replace( /<%(.*?)%>/g,
+    function(match, code){
+      return self.evalCompositionFrontCode(code);
+    });
+  var parser = new DOMParser();
+  var dom = parser.parseFromString('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">'+svgCode+"</svg>", "text/xml");
+
+  var group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  group.setAttribute("class", "composition-front");
+  group.setAttribute("transform", "translate("+ this.conf.x +","+ this.conf.y 
+                                  +") rotate("+this.conf.rotate+")");
+  // Copy the composition front elements to the page:
+  while ( dom.documentElement.hasChildNodes() ) {
+    group.appendChild( dom.documentElement.firstChild );
+  };
+  svg.appendChild(group);
 }
 
 Composition.prototype.generateBack = function() {
