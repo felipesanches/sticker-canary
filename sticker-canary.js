@@ -71,15 +71,46 @@ stickerCanary.generateDoublePage = function(doublePageIndex) {
 }
 
 stickerCanary.generateStickersNumbering = function() {
+  var clips = {}
   var counter = 1;
   for (var dp in this.currentAlbum.doublePages){
     var dp = this.currentAlbum.doublePages[dp];
     for (var composition in dp.compositions){
       var composition = dp.compositions[composition];
+      var cols = composition.matrix.cols;
+      var rows = composition.matrix.rows;
       composition.baseNumber = counter;
-      counter += composition.matrix.cols * composition.matrix.rows;
+      counter += cols * rows;
+      if (!clips[[cols,rows]]){
+        clips[[cols,rows]] = true;
+        this.generateClipPath(rows,cols);
+      }
     }
   }
+}
+
+stickerCanary.generateClipPath = function(rows,cols) {
+  const SVGNS = "http://www.w3.org/2000/svg";
+  var margin = stickerCanary.toUserUnit( this.currentAlbum.compositionLayout.margin );
+  var stickerLayout = this.currentAlbum.stickerLayout;
+  var clipId = "composition-clip-"+rows+"-"+cols;
+  var clipPath = document.createElementNS(SVGNS, "clipPath");
+  clipPath.setAttribute("id", clipId);
+  
+//  <rect x="0" y="0" width="100" height="100" />
+  var path = document.createElementNS(SVGNS, "rect");
+  path.setAttribute("x", margin);
+  path.setAttribute("y", margin);
+  path.setAttribute("width", stickerCanary.toUserUnit(stickerLayout.width)*cols);
+  path.setAttribute("height", stickerCanary.toUserUnit(stickerLayout.width)*rows);
+
+  //var path = document.createElementNS(SVGNS, "path");
+  //path.setAttribute("d", "M 0,0 h 100 v 100 h -100 v -100");
+
+  clipPath.appendChild(path);
+  
+  var defs = document.getElementsByTagName("defs")[0];
+  defs.appendChild(clipPath);
 }
 
 stickerCanary.loadAlbum = function(jsonAlbum) {

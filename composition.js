@@ -10,12 +10,16 @@ function Composition(cName, dPage) {
 
 Composition.prototype.evalCompositionFrontCode = function(code) {
   var currentComposition = {
+    x: stickerCanary.toUserUnit(this.conf.x),
+    y: stickerCanary.toUserUnit(this.conf.y),
     img: this.conf.img,
     label: this.conf.label,
     transform: this.conf.transform,
     width: stickerCanary.toUserUnit( this.stickerLayout.width ) * this.conf.matrix.cols,
-    height: stickerCanary.toUserUnit( this.stickerLayout.height ) * this.conf.matrix.rows
+    height: stickerCanary.toUserUnit( this.stickerLayout.height ) * this.conf.matrix.rows,
+    clipId: "#composition-clip-"+this.conf.matrix.rows+"-"+this.conf.matrix.cols
   };
+  var margin = stickerCanary.toUserUnit( this.compositionLayout.margin );
   return eval(code);
 }
 
