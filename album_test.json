@@ -1,0 +1,69 @@
+album = {
+  config : {
+    outputStructure: "single page",
+    bleadMargin: "0",
+    addPrintingMarks: null,
+    pageWidth: "200mm",
+    pageHeight: "250mm",
+  },
+  compositionLayout: {
+    slot: "<rect width='<% currentComposition.width %>'"+
+               " height='<% currentComposition.height %>' fill='none' stroke='#FE0'/>",
+    slotImageFilter: "<SVG Filter>",
+    front: "<rect width='<% currentComposition.width %>'"+
+                " height='<% currentComposition.height %>' fill='#FFF'/>",
+    frontImageFilter: "<SVG Filter>",
+    margin: "4mm"
+  },
+  stickerLayout: {
+    width: "40mm",
+    height: "50mm",
+    slot: "<rect width='<% stickerLayout.width %>' height='<% stickerLayout.height %>'"+
+               " fill='#FFF' fill-opacity='0.5'/>"+
+          "<text x='<% stickerLayout.width - 10 %>'"+
+               " y='<% stickerLayout.height - 10 %>'><% currentSticker.number %></text>",
+    front: "",
+    back:  "<text x='<% stickerLayout.width - 10 %>'"+
+                " y='<% stickerLayout.height - 30 %>'><% currentSticker.composition.label %></text>"+
+           "<text x='<% stickerLayout.width - 10 %>'"+
+                " y='<% stickerLayout.height - 10 %>'><% currentSticker.number %></text>"
+  },
+  masterPages: {
+    master: "<rect width='<% page.width * 2 %>' height='<% page.height %>' fill='#DDD'/>"+
+            "<text x='<% 30 %>'"+
+                 " y='<% page.height - 30 %>'><% page.left.number %></text>"+
+            "<text x='<% page.width * 2 - 30 %>'"+
+                 " y='<% page.height - 30 %>'><% page.right.number %></text>",
+  },
+  compositions: {
+    "comp1": {
+      img: "file:///home/felipe/devel/felipesanches/album_dariosan/cromo-01.png",
+      label: "Primeira Imagem",
+      matrix: { rows:1 , cols:1 },
+      transform: "scale(0.4) translate(-10,0)"
+    },
+    "comp2": {
+      img: "file:///home/felipe/devel/felipesanches/album_dariosan/cromo-02.png",
+      label: "Essa é a segunda",
+      matrix: { rows:2 , cols:2 },
+      transform: "scale(0.4) translate(-10,0)"
+    },
+    "comp3": {
+      img: "file:///home/felipe/devel/felipesanches/album_dariosan/cromo-03.png",
+      label: "Precisamos de uma terceira",
+      matrix: { rows:1 , cols:2 },
+      transform: "scale(0.4) translate(-10,0)"
+    }
+  },
+  doublePages: [
+    { masterPage: "master",
+      compositions: { "comp1":{x:10,y:10,rotation:0}, "comp2":{x:10,y:200,rotation:0}, "comp3":{x:500,y:200,rotation:0} },
+      svgExtra: "svg fragment",
+      metadata : {
+        "<name>": "<value>",  // alimenta espaços da masterPage
+        //...
+      }
+    },
+ //   ...
+  ]
+}
