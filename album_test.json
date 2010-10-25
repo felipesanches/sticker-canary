@@ -49,21 +49,21 @@ album = {
       img: "file:///home/felipe/devel/felipesanches/album_dariosan/cromo-01.png",
       label: "Primeira Imagem",
       matrix: { rows:1 , cols:1 },
-      transform: "translate(0,0) scale(0.1)"
+      transform: "translate(0,0) scale(1)"
     },
     "comp2": {
       x:80,y:200,rotate:0,
       img: "file:///home/felipe/devel/felipesanches/album_dariosan/cromo-02.jpg",
       label: "Essa é a segunda",
       matrix: { rows:2 , cols:2 },
-      transform: "translate(0,0) scale(0.1)"
+      transform: "translate(0,0) scale(1)"
     },
     "comp3": {
       x:500,y:200,rotate:0,
       img: "file:///home/felipe/devel/felipesanches/album_dariosan/cromo-03.jpg",
       label: "Precisamos de uma terceira",
       matrix: { rows:1 , cols:2 },
-      transform: "translate(0,0) scale(0.1)"
+      transform: "translate(0,0) scale(1)"
     }
   },
 

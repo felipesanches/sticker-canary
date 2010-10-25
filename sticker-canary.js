@@ -101,8 +101,8 @@ stickerCanary.generateClipPath = function(rows,cols) {
   var path = document.createElementNS(SVGNS, "rect");
   path.setAttribute("x", margin);
   path.setAttribute("y", margin);
-  path.setAttribute("width", stickerCanary.toUserUnit(stickerLayout.width)*cols);
-  path.setAttribute("height", stickerCanary.toUserUnit(stickerLayout.width)*rows);
+  path.setAttribute("width", stickerCanary.toUserUnit(stickerLayout.width)*cols - 2*margin);
+  path.setAttribute("height", stickerCanary.toUserUnit(stickerLayout.height)*rows - 2*margin);
 
   //var path = document.createElementNS(SVGNS, "path");
   //path.setAttribute("d", "M 0,0 h 100 v 100 h -100 v -100");
