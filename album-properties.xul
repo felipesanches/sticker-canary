@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<window
+    id="sticker-canary-window"
+    title="Sticker Canary"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    >
+    
+  <groupbox>
+    <caption label="Page Dimensions"/>
+    <grid>
+      <columns>
+        <column flex="1"/>
+        <column flex="1"/>
+        <column flex="1"/>
+      </columns>
+      <rows>
+        <row>
+          <label value="width"/>
+          <textbox type="number" id="width"/>
+          <menulist>
+            <menupopup>
+              <menuitem label="cm"/>
+              <menuitem label="in"/>
+              <menuitem label="mm" selected="true"/>
+              <menuitem label="px"/>
+            </menupopup>
+          </menulist>
+        </row>
+        <row>
+          <label value="height"/>
+          <textbox type="number" id="height"/>
+          <menulist>
+            <menupopup>
+              <menuitem label="cm"/>
+              <menuitem label="in"/>
+              <menuitem label="mm" selected="true"/>
+              <menuitem label="px"/>
+            </menupopup>
+          </menulist>
+        </row>
+      </rows>
+    </grid>
+  </groupbox>
+
+  <button label="OK" oncommand="window.close()"/>
+
+  <script>
+  </script>
+</window>
