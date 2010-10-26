@@ -12,11 +12,12 @@ album = {
     slotImageFilter: "<SVG Filter>",
     front: "<rect width='<% currentComposition.width %>'"+
                 " height='<% currentComposition.height %>' fill='#FFF'/>"+
-           "<image xlink:href='<% currentComposition.img %>'"+
-                 " clip-path='url(<% currentComposition.clipId %>)'"+
+           "<g clip-path='url(<% currentComposition.clipId %>)'>"+
+           "  <image xlink:href='<% currentComposition.img %>'"+
                  " width='100%' height='100%'"+
                  " preserveAspectRatio='xMinYMin meet'"+
-                 " transform='<% currentComposition.transform %>'/>",
+                 " transform='<% currentComposition.transform %>'/>"+
+           "</g>",
     frontImageFilter: "<SVG Filter>",
     margin: "4mm"
   },
