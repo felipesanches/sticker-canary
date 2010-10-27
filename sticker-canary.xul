@@ -5,13 +5,32 @@
     id="sticker-canary-window"
     title="Sticker Canary"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-    xmlns:html="http://www.w3.org/1999/xhtml"
-    >
+    xmlns:html="http://www.w3.org/1999/xhtml">
 
   <toolbar>
     <toolbarbutton label="new album" oncommand='window.open("album-properties.xul", "New Album", "width=600,height=800")'/>
     <toolbarbutton label="add composition" oncommand="alert('adding a new composition!')"/>
   </toolbar>
+  
+  <hbox flex="1">
+    <toolbar orient="vertical">
+      <toolbarbutton image="icons/edit-picture.png" oncommand=""/>
+      <toolbarbutton image="icons/edit-composition.png" oncommand=""/>
+    </toolbar>
+    <iframe src="sticker-canary.svg" flex="1" style="border:1px solid ButtonShadow" />
+    <splitter tooltiptext="Resize it"> <grippy/> </splitter>
+    <vbox>
+      <label value="Information" style="font-weight:bold" />
+    </vbox>
+  </hbox>
+
+  <statusbar>
+    <statusbarpanel label="Left panel"/>
+    <spacer flex="1"/>
+    <progressmeter mode="determined" value="82"/>
+    <statusbarpanel label="Right panel"/>
+    <resizer dir="bottomright" height="2" style="cursor: se-resize;"/>
+  </statusbar>
 
   <script>
   </script>
