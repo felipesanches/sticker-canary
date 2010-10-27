@@ -3,6 +3,17 @@ function ImageControls(imageId){
   this.transform = this.img.getAttribute("transform");
 }
 
+var compositions_visible=true;
+function toggle_compositions_display(){
+  var groups = document.getElementsByTagName("g");
+  for (var g in groups){
+    g = groups[g];
+    if (g.className && g.className.baseVal == "composition-front")
+      g.setAttribute("visibility", compositions_visible ? "hidden":"visible");
+  }
+  compositions_visible=!compositions_visible;
+}
+
 function Composition(cName, dPage) {
   this.name = cName;
   this.dPage = dPage;
@@ -58,7 +69,7 @@ Composition.prototype.evalStickerCode = function(code, number) {
 }
 
 Composition.prototype.generateSlot = function() {
-  var svg = stickerCanary.doc.documentElement;
+  var svg = stickerCanary.svg;
   var self = this;
   var svgCode = this.compositionLayout.slot.replace( /<%(.*?)%>/g,
     function(match, code){
@@ -104,7 +115,7 @@ Composition.prototype.generateSlot = function() {
 }
 
 Composition.prototype.generateFront = function() {
-  var svg = stickerCanary.doc.documentElement;
+  var svg = stickerCanary.svg;
   var self = this;
   var svgCode = this.compositionLayout.front.replace( /<%(.*?)%>/g,
     function(match, code){

@@ -1,26 +1,26 @@
 const SVGNS = "http://www.w3.org/2000/svg";
 
 function knot(obj, x0,y0,r,fill){
-  var svg = document.documentElement;
+  this.svg = document.getElementsByTagName("svg")[0];
   if (!r) r=5;
   if (!fill) fill="black";
   this.x = x0;
   this.y = y0;
   this.ctrlElement = document.createElementNS(SVGNS, "circle");
-  this.ctrlElement.setAttribute("cx", this.x);
-  this.ctrlElement.setAttribute("cy", this.y);
+  this.ctrlElement.setAttribute("transform", "translate("+this.x+","+this.y+")");
+  this.ctrlElement.setAttribute("cx", 0);
+  this.ctrlElement.setAttribute("cy", 0);
   this.ctrlElement.setAttribute("r", r);
   this.ctrlElement.setAttribute("fill", fill);
 
-  svg.appendChild(this.ctrlElement);
+  this.svg.appendChild(this.ctrlElement);
   
   var self = this;
   document.addEventListener("mousemove", function(e){
     if(self.drag){
-      self.x = e.pageX;    
+      self.x = e.pageX;
       self.y = e.pageY;
-      self.ctrlElement.setAttribute("cx", self.x);
-      self.ctrlElement.setAttribute("cy", self.y);
+      self.ctrlElement.setAttribute("transform", "translate("+self.x+","+self.y+")");
     }
   }, false);
   
@@ -33,6 +33,7 @@ function knot(obj, x0,y0,r,fill){
 }
 
 const stickerCanary = new Object();
+stickerCanary.svg = document.getElementsByTagName("svg")[0];
 
 stickerCanary.getUnit = function(value) {
   var unit = value.toString().replace(/[.0-9 ]/g, "");
@@ -77,10 +78,9 @@ stickerCanary.generateDoublePage = function(doublePageIndex) {
   var dPage = this.getDoublePageFromIndex(doublePageIndex);
   var master = this.getMasterFromDoublePage(dPage);
   // Resize SVG:
-  var svg = this.doc.documentElement;
   var unit = this.getUnit(this.currentAlbum.config.pageWidth);
-  svg.setAttribute( "width", parseFloat(this.currentAlbum.config.pageWidth) * 2 + unit );
-  svg.setAttribute( "height", this.currentAlbum.config.pageHeight );
+  this.svg.setAttribute( "width", parseFloat(this.currentAlbum.config.pageWidth) * 2 + unit );
+  this.svg.setAttribute( "height", this.currentAlbum.config.pageHeight );
   // Parse and translate master content:
   var svgCode = master.replace( /<%(.*?)%>/g,
         function(match, code){ return stickerCanary.evalMasterTemplateCode(code, doublePageIndex) }
@@ -90,7 +90,7 @@ stickerCanary.generateDoublePage = function(doublePageIndex) {
   
   // Copy the master content to the page:
   while ( dom.documentElement.hasChildNodes() ) {
-    svg.appendChild( dom.documentElement.firstChild );
+    this.svg.appendChild( dom.documentElement.firstChild );
   }
 
   // TODO: Put the dPage.svgExtras on the svg

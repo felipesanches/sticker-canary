@@ -14,10 +14,35 @@
   
   <hbox flex="1">
     <toolbar orient="vertical">
-      <toolbarbutton image="icons/edit-picture.png" oncommand=""/>
-      <toolbarbutton image="icons/edit-composition.png" oncommand=""/>
+
+      <tooltip id="pictures-tooltip" orient="vertical">
+        <label value="Edit pictures positioning"/>
+      </tooltip>
+      <toolbarbutton image="icons/edit-picture.png" tooltip="pictures-tooltip" oncommand=""/>
+
+      <tooltip id="compositions-tooltip">
+        <label value="Edit pictures positioning"/>
+      </tooltip>
+      <toolbarbutton image="icons/edit-composition.png" tooltip="compositions-tooltip" oncommand=""/>
+
+      <tooltip id="togglecompositions-tooltip">
+        <label value="Toggle display of sticker compositions"/>
+      </tooltip>
+      <toolbarbutton label="TODO" image="TODO.png" tooltip="togglecompositions-tooltip" oncommand="toggle_compositions_display();"/>
+
     </toolbar>
+<!--
     <iframe src="sticker-canary.svg" flex="1" style="border:1px solid ButtonShadow" />
+-->
+    <box flex="1" style="border:1px solid ButtonShadow;overflow:auto">
+      <svg
+         xmlns="http://www.w3.org/2000/svg"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         version="1.1">
+        <defs/>
+      </svg>
+    </box>
+    
     <splitter tooltiptext="Resize it"> <grippy/> </splitter>
     <vbox>
       <label value="Information" style="font-weight:bold" />
@@ -32,6 +57,35 @@
     <resizer dir="bottomright" height="2" style="cursor: se-resize;"/>
   </statusbar>
 
+  <script src="album_test.json" />
+  <script src="composition.js" />
+  <script src="sticker-canary.js" />
   <script>
+    stickerCanary.doc = document.getElementsByTagName("svg")[0];
+    stickerCanary.loadAlbum(album);
+    stickerCanary.generateDoublePage(0);
+  </script>
+  
+  <script>
+  <![CDATA[
+
+    testobj1 = {};
+    testobj2 = {};
+    testobj3 = {};
+    testobj4 = {};
+
+    new knot(testobj1,100,100);
+    new knot(testobj2,120,120,10,"blue");
+    new knot(testobj3,100,160,15,"green");
+    new knot(testobj4,120,100,25,"red");
+/*
+    document.addEventListener("mouseup", function(e){
+      alert("x1:"+testobj1.x+" y1:"+testobj1.y+
+      "\nx2:"+testobj2.x+" y2:"+testobj2.y+
+      "\nx3:"+testobj3.x+" y3:"+testobj3.y+
+      "\nx4:"+testobj4.x+" y4:"+testobj4.y);
+    }, false);
+*/
+  ]]>
   </script>
 </window>
