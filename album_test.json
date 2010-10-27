@@ -12,12 +12,7 @@ album = {
     slotImageFilter: "<SVG Filter>",
     front: "<rect width='<% currentComposition.width %>'"+
                 " height='<% currentComposition.height %>' fill='#FFF'/>"+
-           "<g clip-path='url(<% currentComposition.clipId %>)'>"+
-           "  <image xlink:href='<% currentComposition.img %>'"+
-                 " width='100%' height='100%'"+
-                 " preserveAspectRatio='xMinYMin meet'"+
-                 " transform='<% currentComposition.transform %>'/>"+
-           "</g>",
+           "<% currentComposition.img %>",
     frontImageFilter: "<SVG Filter>",
     margin: "4mm"
   },
@@ -50,21 +45,21 @@ album = {
       img: "file:///home/felipe/devel/felipesanches/album_dariosan/cromo-01.png",
       label: "Primeira Imagem",
       matrix: { rows:1 , cols:1 },
-      transform: "translate(0,0) scale(1)"
+      transform: "translate(-40,0) scale(0.2)"
     },
     "comp2": {
       x:80,y:200,rotate:0,
       img: "file:///home/felipe/devel/felipesanches/album_dariosan/cromo-02.jpg",
       label: "Essa é a segunda",
       matrix: { rows:2 , cols:2 },
-      transform: "translate(0,0) scale(1)"
+      transform: "translate(0,0) scale(0.4)"
     },
     "comp3": {
       x:500,y:200,rotate:0,
       img: "file:///home/felipe/devel/felipesanches/album_dariosan/cromo-03.jpg",
       label: "Precisamos de uma terceira",
       matrix: { rows:1 , cols:2 },
-      transform: "translate(0,0) scale(1)"
+      transform: "translate(-100,0) scale(0.3)"
     }
   },
 

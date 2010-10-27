@@ -1,3 +1,37 @@
+const SVGNS = "http://www.w3.org/2000/svg";
+
+function knot(obj, x0,y0,r,fill){
+  var svg = document.documentElement;
+  if (!r) r=5;
+  if (!fill) fill="black";
+  this.x = x0;
+  this.y = y0;
+  this.ctrlElement = document.createElementNS(SVGNS, "circle");
+  this.ctrlElement.setAttribute("cx", this.x);
+  this.ctrlElement.setAttribute("cy", this.y);
+  this.ctrlElement.setAttribute("r", r);
+  this.ctrlElement.setAttribute("fill", fill);
+
+  svg.appendChild(this.ctrlElement);
+  
+  var self = this;
+  document.addEventListener("mousemove", function(e){
+    if(self.drag){
+      self.x = e.pageX;    
+      self.y = e.pageY;
+      self.ctrlElement.setAttribute("cx", self.x);
+      self.ctrlElement.setAttribute("cy", self.y);
+    }
+  }, false);
+  
+  document.addEventListener("mouseup", function(e){
+    self.drag = false;
+    obj.x = self.x;
+    obj.y = self.y;
+  }, false);
+  this.ctrlElement.onmousedown = function(e){self.drag = true;}
+}
+
 const stickerCanary = new Object();
 
 stickerCanary.getUnit = function(value) {

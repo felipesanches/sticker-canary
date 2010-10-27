@@ -1,3 +1,8 @@
+function ImageControls(imageId){
+  this.img = document.getElementById(imageId);
+  this.transform = this.img.getAttribute("transform");
+}
+
 function Composition(cName, dPage) {
   this.name = cName;
   this.dPage = dPage;
@@ -9,17 +14,24 @@ function Composition(cName, dPage) {
 }
 
 Composition.prototype.evalCompositionFrontCode = function(code) {
+  var clipId = "#composition-clip-"+this.conf.matrix.rows+"-"+this.conf.matrix.cols;
+  var currentCompositionImage =
+      "<g clip-path='url("+ clipId +")'>"+
+           "<image xlink:href='"+ this.conf.img + "'"+
+                 " width='100%' height='100%'"+
+                 " preserveAspectRatio='xMinYMin meet'"+
+                 " transform='"+ this.conf.transform +"'/>"+
+      "</g>"
+
   var currentComposition = {
     x: stickerCanary.toUserUnit(this.conf.x),
     y: stickerCanary.toUserUnit(this.conf.y),
-    img: this.conf.img,
+    img: currentCompositionImage,
     label: this.conf.label,
-    transform: this.conf.transform,
     width: stickerCanary.toUserUnit( this.stickerLayout.width ) * this.conf.matrix.cols,
     height: stickerCanary.toUserUnit( this.stickerLayout.height ) * this.conf.matrix.rows,
-    clipId: "#composition-clip-"+this.conf.matrix.rows+"-"+this.conf.matrix.cols
   };
-  var margin = stickerCanary.toUserUnit( this.compositionLayout.margin );
+//  var margin = stickerCanary.toUserUnit( this.compositionLayout.margin );
   return eval(code);
 }
 

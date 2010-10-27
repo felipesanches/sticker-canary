@@ -39,6 +39,26 @@
           g.setAttribute("visibility", "hidden");
       }
     }
+
+    testobj1 = {};
+    testobj2 = {};
+    testobj3 = {};
+    testobj4 = {};
+
+    new knot(testobj1,100,100);
+    new knot(testobj2,120,120,10,"blue");
+    new knot(testobj3,100,160,15,"green");
+    new knot(testobj4,120,100,25,"red");
+
+/*
+    document.addEventListener("mouseup", function(e){
+      alert("x1:"+testobj1.x+" y1:"+testobj1.y+
+      "\nx2:"+testobj2.x+" y2:"+testobj2.y+
+      "\nx3:"+testobj3.x+" y3:"+testobj3.y+
+      "\nx4:"+testobj4.x+" y4:"+testobj4.y);
+    }, false);
+*/
+
   ]]>
   </script>
 </svg>
