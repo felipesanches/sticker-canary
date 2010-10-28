@@ -53,7 +53,7 @@ Composition.prototype.evalCompositionFrontCode = function(code) {
                  " preserveAspectRatio='xMinYMin meet'"+
                  " transform='"+ this.serialize_transform(this.conf.transform, width, height) +"'/>"+
       "</g>" +
-      "<use xlink:href='#composition-image-"+Composition.lastImageId+"' style='opacity:0.3' />";
+      "<use xlink:href='#composition-image-"+Composition.lastImageId+"' visibility='hidden' style='opacity:0.3' />";
 
   var currentComposition = {
     x: stickerCanary.toUserUnit(this.conf.x),
@@ -135,6 +135,27 @@ Composition.prototype.generateSlot = function() {
 
 }
 
+Composition.prototype.hideHandles = function(){
+  var use = this.front.getElementsByTagName("use")[0];
+  use.setAttribute("visibility", "hidden");
+  //Todo: hide other elements that are used as image composition handles
+  
+  Composition.selectedComposition = null;
+}
+
+Composition.prototype.showHandles = function(){
+  if (Composition.selectedComposition){
+    if (Composition.selectedComposition == this) return;
+    Composition.selectedComposition.hideHandles();
+  }
+  
+  Composition.selectedComposition = this;
+  
+  var use = this.front.getElementsByTagName("use")[0];
+  use.setAttribute("visibility", "visible");  
+}
+
+
 Composition.prototype.generateFront = function() {
   var svg = stickerCanary.svg;
   var self = this;
@@ -146,17 +167,19 @@ Composition.prototype.generateFront = function() {
   var dom = parser.parseFromString('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">'+svgCode+"</svg>", "text/xml");
 
   const SVG_NS = "http://www.w3.org/2000/svg";
-  var group = document.createElementNS(SVG_NS, "g");
-  group.setAttribute("class", "composition-front");
-  group.setAttribute("transform", "rotate("+this.conf.rotate+") translate("+ this.conf.x +","+ this.conf.y+")");
+  this.front = document.createElementNS(SVG_NS, "g");
+  this.front.setAttribute("class", "composition-front");
+  this.front.setAttribute("transform", "rotate("+this.conf.rotate+") translate("+ this.conf.x +","+ this.conf.y+")");
   // Copy the composition front elements to the page:
   while ( dom.documentElement.hasChildNodes() ) {
-    group.appendChild( dom.documentElement.firstChild );
+    this.front.appendChild( dom.documentElement.firstChild );
   };
-  svg.appendChild(group);
-  
+  svg.appendChild(this.front);
+
   var self = this;
-  var img = group.getElementsByTagName("image")[0];
+  this.front.addEventListener("click", function(){self.showHandles()}, false);
+
+  var img = this.front.getElementsByTagName("image")[0];
   
   var width = stickerCanary.toUserUnit( this.stickerLayout.width ) * this.conf.matrix.cols;
   var height = stickerCanary.toUserUnit( this.stickerLayout.height ) * this.conf.matrix.rows;
@@ -168,7 +191,7 @@ Composition.prototype.generateFront = function() {
   inc_scale.setAttribute("y", 10);
   inc_scale.setAttribute("width", 10);
   inc_scale.setAttribute("height", 10);
-  group.appendChild(inc_scale);
+  this.front.appendChild(inc_scale);
   inc_scale.onclick= function(){
     self.conf.transform.rotate+=1;
     img.setAttribute("transform",
@@ -181,7 +204,7 @@ Composition.prototype.generateFront = function() {
   dec_scale.setAttribute("y", 20);
   dec_scale.setAttribute("width", 10);
   dec_scale.setAttribute("height", 10);
-  group.appendChild(dec_scale);
+  this.front.appendChild(dec_scale);
   dec_scale.onclick= function(){
     self.conf.transform.rotate-=1;
     img.setAttribute("transform",
