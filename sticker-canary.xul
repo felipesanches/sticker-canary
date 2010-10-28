@@ -68,7 +68,7 @@
   
   <script>
   <![CDATA[
-
+/*
     testobj1 = {};
     testobj2 = {};
     testobj3 = {};
@@ -78,7 +78,7 @@
     new knot(testobj2,120,120,10,"blue");
     new knot(testobj3,100,160,15,"green");
     new knot(testobj4,120,100,25,"red");
-/*
+
     document.addEventListener("mouseup", function(e){
       alert("x1:"+testobj1.x+" y1:"+testobj1.y+
       "\nx2:"+testobj2.x+" y2:"+testobj2.y+
