@@ -28,7 +28,7 @@
       <tooltip id="togglecompositions-tooltip">
         <label value="Toggle display of sticker compositions"/>
       </tooltip>
-      <toolbarbutton label="TODO" image="TODO.png" tooltip="togglecompositions-tooltip" oncommand="toggle_compositions_display();"/>
+      <toolbarbutton image="icons/toggle-compositions-display.png" tooltip="togglecompositions-tooltip" oncommand="toggle_compositions_display();"/>
 
     </toolbar>
 <!--
