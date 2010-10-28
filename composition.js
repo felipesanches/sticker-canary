@@ -90,7 +90,7 @@ Composition.prototype.evalStickerCode = function(code, number) {
 }
 
 Composition.prototype.generateSlot = function() {
-  var svg = stickerCanary.svg;
+  var albumLayer = stickerCanary.albumLayer;
   var self = this;
   var svgCode = this.compositionLayout.slot.replace( /<%(.*?)%>/g,
     function(match, code){
@@ -107,7 +107,7 @@ Composition.prototype.generateSlot = function() {
   while ( dom.documentElement.hasChildNodes() ) {
     group.appendChild( dom.documentElement.firstChild );
   };
-  svg.appendChild(group);
+  albumLayer.appendChild(group);
 
   // Copy the sticker slots to the page:
   for (var row=0; row<this.conf.matrix.rows; row++){
@@ -157,7 +157,7 @@ Composition.prototype.showHandles = function(){
 
 
 Composition.prototype.generateFront = function() {
-  var svg = stickerCanary.svg;
+  var albumLayer = stickerCanary.albumLayer;
   var self = this;
   var svgCode = this.compositionLayout.front.replace( /<%(.*?)%>/g,
     function(match, code){
@@ -174,7 +174,7 @@ Composition.prototype.generateFront = function() {
   while ( dom.documentElement.hasChildNodes() ) {
     this.front.appendChild( dom.documentElement.firstChild );
   };
-  svg.appendChild(this.front);
+  albumLayer.appendChild(this.front);
 
   var self = this;
   this.front.addEventListener("click", function(){self.showHandles()}, false);

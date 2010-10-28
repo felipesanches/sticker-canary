@@ -1,7 +1,7 @@
 const SVGNS = "http://www.w3.org/2000/svg";
 
 function knot(obj, x0,y0,r,fill){
-  this.svg = document.getElementsByTagName("svg")[0];
+  this.ctrlLayer = StickerCanary.ctrlLayer;
   if (!r) r=5;
   if (!fill) fill="black";
   this.x = x0;
@@ -13,7 +13,7 @@ function knot(obj, x0,y0,r,fill){
   this.ctrlElement.setAttribute("r", r);
   this.ctrlElement.setAttribute("fill", fill);
 
-  this.svg.appendChild(this.ctrlElement);
+  this.ctrlLayer.appendChild(this.ctrlElement);
   
   var self = this;
   document.addEventListener("mousemove", function(e){
@@ -77,10 +77,7 @@ stickerCanary.evalMasterTemplateCode = function(code, doublePageIndex) {
 stickerCanary.generateDoublePage = function(doublePageIndex) {
   var dPage = this.getDoublePageFromIndex(doublePageIndex);
   var master = this.getMasterFromDoublePage(dPage);
-  // Resize SVG:
-  var unit = this.getUnit(this.currentAlbum.config.pageWidth);
-  this.svg.setAttribute( "width", parseFloat(this.currentAlbum.config.pageWidth) * 2 + unit );
-  this.svg.setAttribute( "height", this.currentAlbum.config.pageHeight );
+
   // Parse and translate master content:
   var svgCode = master.replace( /<%(.*?)%>/g,
         function(match, code){ return stickerCanary.evalMasterTemplateCode(code, doublePageIndex) }
@@ -90,7 +87,7 @@ stickerCanary.generateDoublePage = function(doublePageIndex) {
   
   // Copy the master content to the page:
   while ( dom.documentElement.hasChildNodes() ) {
-    this.svg.appendChild( dom.documentElement.firstChild );
+    this.albumLayer.appendChild( dom.documentElement.firstChild );
   }
 
   // TODO: Put the dPage.svgExtras on the svg
@@ -147,8 +144,49 @@ stickerCanary.generateClipPath = function(rows,cols) {
   defs.appendChild(clipPath);
 }
 
+stickerCanary.setSVGSize = function(){
+  var unit = this.getUnit(this.currentAlbum.config.pageWidth);
+  this.dPageSize = {
+      width: this.toUserUnit(this.currentAlbum.config.pageWidth) * 2,
+      height: this.toUserUnit(this.currentAlbum.config.pageHeight)
+  }
+  this.svg.setAttribute( "width", this.dPageSize.width );
+  this.svg.setAttribute( "height", this.dPageSize.height );
+}
+
 stickerCanary.loadAlbum = function(jsonAlbum) {
   this.currentAlbum = jsonAlbum;
   this.generateStickersNumbering();
+  this.setSVGSize();
+  
+  this.albumLayer = document.createElementNS(SVGNS, "g");
+  this.ctrlLayer = document.createElementNS(SVGNS, "g");
+  this.svg.appendChild(this.albumLayer);
+  this.svg.appendChild(this.ctrlLayer);
+  
+  //todo remove this test:
+  var bola = document.createElementNS(SVGNS, "circle");
+  bola.setAttribute("cx", "50");
+  bola.setAttribute("cy", "50");
+  bola.setAttribute("r", "50");
+  bola.setAttribute("fill", "pink");
+  this.ctrlLayer.appendChild(bola);    
+}
+
+stickerCanary.setZoomLevel = function(scale){
+  this.albumLayer.setAttribute("transform","scale("+scale+")");
+  this.svg.setAttribute("width", this.dPageSize.width * scale);
+  this.svg.setAttribute("height", this.dPageSize.height * scale);
+
+/*
+  var img = document.getElementsByTagName("image")[0];
+  if (!img) return;
+  var s = "";
+  for (var i in img){
+    s+= " "+i+": "+img[i]+"\n";
+  }  
+//  alert(s);
+  alert(img.viewportElement.getAttribute("width"));
+*/
 }
 

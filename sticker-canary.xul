@@ -5,7 +5,8 @@
     id="sticker-canary-window"
     title="Sticker Canary"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-    xmlns:html="http://www.w3.org/1999/xhtml">
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    onload="init()">
 
   <toolbar>
     <toolbarbutton label="new album" oncommand='window.open("album-properties.xul", "New Album", "width=600,height=800")'/>
@@ -34,14 +35,20 @@
 <!--
     <iframe src="sticker-canary.svg" flex="1" style="border:1px solid ButtonShadow" />
 -->
-    <box flex="1" style="border:1px solid ButtonShadow;overflow:auto">
-      <svg
-         xmlns="http://www.w3.org/2000/svg"
-         xmlns:xlink="http://www.w3.org/1999/xlink"
-         version="1.1">
-        <defs/>
-      </svg>
-    </box>
+    <vbox flex="1" style="border:1px solid ButtonShadow;overflow:auto">
+      <spacer flex="1" />
+      <hbox>
+        <spacer flex="1" />
+        <svg
+           xmlns="http://www.w3.org/2000/svg"
+           xmlns:xlink="http://www.w3.org/1999/xlink"
+           version="1.1">
+          <defs/>
+        </svg>
+        <spacer flex="1" />
+      </hbox>
+      <spacer flex="1" />
+    </vbox>
     
     <splitter tooltiptext="Resize it"> <grippy/> </splitter>
     <vbox>
@@ -53,7 +60,22 @@
     <statusbarpanel label="Left panel"/>
     <spacer flex="1"/>
     <progressmeter mode="determined" value="82"/>
-    <statusbarpanel label="Right panel"/>
+    <statusbarpanel>  
+      <script><![CDATA[
+        function setZoom(v){
+          var zoom;
+          v/=20;
+          if (v<0.5){
+            zoom = v*2;
+          } else {
+            zoom = 1 + (v-0.5)*20;
+          }
+          stickerCanary.setZoomLevel(zoom);
+          document.getElementById("zoomlevel").value = Math.round(zoom*100) + "%";
+        }
+      ]]></script>
+      <label value="Zoom:"/><scale id="zoomlevel_scale" min="1" max="19" onchange="setZoom(this.value)"/><label id="zoomlevel" />
+    </statusbarpanel>
     <resizer dir="bottomright" height="2" style="cursor: se-resize;"/>
   </statusbar>
 
@@ -61,9 +83,13 @@
   <script src="composition.js" />
   <script src="sticker-canary.js" />
   <script>
-    stickerCanary.doc = document.getElementsByTagName("svg")[0];
-    stickerCanary.loadAlbum(album);
-    stickerCanary.generateDoublePage(0);
+    function init() {
+      stickerCanary.doc = document.getElementsByTagName("svg")[0];
+      stickerCanary.loadAlbum(album);
+      stickerCanary.generateDoublePage(0);
+
+      document.getElementById("zoomlevel_scale").value = 5;
+    }
   </script>
   
   <script>
