@@ -40,23 +40,20 @@ Composition.prototype.serialize_transform = function(t, w, h){
          "translate(" + (-w/2)/t.scale + "," + (-h/2)/t.scale + ") ";
 }
 
+Composition.lastImageId = 0;
 Composition.prototype.evalCompositionFrontCode = function(code) {
   var clipId = "#composition-clip-"+this.conf.matrix.rows+"-"+this.conf.matrix.cols;
   var width = stickerCanary.toUserUnit( this.stickerLayout.width ) * this.conf.matrix.cols;
   var height = stickerCanary.toUserUnit( this.stickerLayout.height ) * this.conf.matrix.rows;
+  Composition.lastImageId++;
   var currentCompositionImage =
       "<g clip-path='url("+ clipId +")'>"+
-           "<image xlink:href='"+ this.conf.img + "'"+
+           "<image id='composition-image-"+Composition.lastImageId+"' xlink:href='"+ this.conf.img + "'"+
                  " width='100%' height='100%'"+
                  " preserveAspectRatio='xMinYMin meet'"+
                  " transform='"+ this.serialize_transform(this.conf.transform, width, height) +"'/>"+
       "</g>" +
-      "<g style='opacity:0.3'>"+
-           "<image xlink:href='"+ this.conf.img + "'"+
-                 " width='100%' height='100%'"+
-                 " preserveAspectRatio='xMinYMin meet'"+
-                 " transform='"+ this.serialize_transform(this.conf.transform, width, height) +"'/>"+
-      "</g>"
+      "<use xlink:href='#composition-image-"+Composition.lastImageId+"' style='opacity:0.3' />";
 
   var currentComposition = {
     x: stickerCanary.toUserUnit(this.conf.x),
@@ -159,7 +156,7 @@ Composition.prototype.generateFront = function() {
   svg.appendChild(group);
   
   var self = this;
-  var img = group.getElementsByTagName("image");
+  var img = group.getElementsByTagName("image")[0];
   
   var width = stickerCanary.toUserUnit( this.stickerLayout.width ) * this.conf.matrix.cols;
   var height = stickerCanary.toUserUnit( this.stickerLayout.height ) * this.conf.matrix.rows;
@@ -174,9 +171,7 @@ Composition.prototype.generateFront = function() {
   group.appendChild(inc_scale);
   inc_scale.onclick= function(){
     self.conf.transform.rotate+=1;
-    img[0].setAttribute("transform",
-        self.serialize_transform(self.conf.transform, width, height));
-    img[1].setAttribute("transform",
+    img.setAttribute("transform",
         self.serialize_transform(self.conf.transform, width, height));
   };
 
@@ -189,9 +184,7 @@ Composition.prototype.generateFront = function() {
   group.appendChild(dec_scale);
   dec_scale.onclick= function(){
     self.conf.transform.rotate-=1;
-    img[0].setAttribute("transform",
-        self.serialize_transform(self.conf.transform, width, height));
-    img[1].setAttribute("transform",
+    img.setAttribute("transform",
         self.serialize_transform(self.conf.transform, width, height));
   }
 }
