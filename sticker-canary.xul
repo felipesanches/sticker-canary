@@ -79,7 +79,7 @@
           var zoom;
           v/=20;
           if (v<0.5) zoom = v*2;
-          else zoom = 1 + (v-0.5)*20;
+          else zoom = 1 + (v-0.5)*10;
           try {
             stickerCanary.setZoomLevel(zoom);
             $("zoomlevel").value = Math.round(zoom*100) + "%";
@@ -88,9 +88,9 @@
           }
         }
       ]]></script>
-      <label value="Zoom:"/><scale id="zoomlevel_scale" pageincrement="1" min="1" max="19" onchange="setZoom(this.value)"/><label id="zoomlevel" />
+      <label value="Zoom:"/><scale id="zoomlevel_scale" pageincrement="1" min="1" max="18" onchange="setZoom(this.value)"/><label id="zoomlevel" />
     </statusbarpanel>
-    <resizer dir="bottomright" height="2" style="cursor: se-resize;"/>
+    <!-- resizer dir="bottomright" height="2" style="cursor: se-resize;"/ -->
   </statusbar>
 
 </window>

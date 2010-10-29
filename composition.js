@@ -29,8 +29,17 @@ Composition.prototype.loadImage = function(callBack) {
   var img = new Image();
   var self = this;
   img.onload = function(){
-    self.conf.imgWidth = img.width;
-    self.conf.imgHeight = img.height;
+    self.imgWidth = img.width;
+    self.imgHeight = img.height;
+    self.img = this.conf.img;
+    self.imageLoadOk = true;
+    callBack();
+  };
+  img.onerror = function(){
+    self.imgWidth = 157;
+    self.imgHeight = 157;
+    self.img = "icons/image-error.png";
+    self.imageLoadOk = false;
     callBack();
   };
   img.src = this.conf.img;
@@ -60,8 +69,8 @@ Composition.prototype.evalCompositionFrontCode = function(code) {
   Composition.lastImageId++;
   var currentCompositionImage =
       "<g clip-path='url("+ clipId +")'>"+
-           "<image id='composition-image-"+Composition.lastImageId+"' xlink:href='"+ this.conf.img + "'"+
-                 " width='"+ this.conf.imgWidth +"' height='"+ this.conf.imgHeight +"'"+
+           "<image id='composition-image-"+Composition.lastImageId+"' xlink:href='"+ this.img + "'"+
+                 " width='"+ this.imgWidth +"' height='"+ this.imgHeight +"'"+
                  " preserveAspectRatio='xMinYMin slice'"+
                  " transform='"+ this.serialize_transform(this.conf.transform, width, height) +"'/>"+
       "</g>" +
