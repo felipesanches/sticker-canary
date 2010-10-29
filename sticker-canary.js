@@ -33,7 +33,9 @@ function knot(obj, x0,y0,r,fill){
 }
 
 const stickerCanary = new Object();
-stickerCanary.svg = document.getElementsByTagName("svg")[0];
+stickerCanary.init = function() {
+  this.svg = $tag("svg")[0];
+}
 
 stickerCanary.getUnit = function(value) {
   var unit = value.toString().replace(/[.0-9 ]/g, "");
@@ -93,11 +95,12 @@ stickerCanary.generateDoublePage = function(doublePageIndex) {
   // TODO: Put the dPage.svgExtras on the svg
   
   for ( var cName in dPage.compositions ) {
-    // Put the Slots on the page
-    var composition = new Composition(cName, dPage);
-    composition.generateSlot();
-    // Put the Stickers on the page
-    composition.generateFront();
+    var composition = new Composition(cName, dPage, function(){
+      // Put the Slots on the page
+      composition.generateSlot();
+      // Put the Stickers on the page
+      composition.generateFront();
+    });
   }
 }
 
@@ -177,16 +180,5 @@ stickerCanary.setZoomLevel = function(scale){
   this.albumLayer.setAttribute("transform","scale("+scale+")");
   this.svg.setAttribute("width", this.dPageSize.width * scale);
   this.svg.setAttribute("height", this.dPageSize.height * scale);
-
-/*
-  var img = document.getElementsByTagName("image")[0];
-  if (!img) return;
-  var s = "";
-  for (var i in img){
-    s+= " "+i+": "+img[i]+"\n";
-  }  
-//  alert(s);
-  alert(img.viewportElement.getAttribute("width"));
-*/
 }
 

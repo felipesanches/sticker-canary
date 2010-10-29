@@ -14,7 +14,7 @@ function toggle_compositions_display(){
   compositions_visible=!compositions_visible;
 }
 
-function Composition(cName, dPage) {
+function Composition(cName, dPage, callBack) {
   this.name = cName;
   this.dPage = dPage;
   this.conf = dPage.compositions[cName];  
@@ -22,6 +22,18 @@ function Composition(cName, dPage) {
   this.stickerLayout = stickerCanary.currentAlbum.stickerLayout;
   this.stickerLayout.width = stickerCanary.toUserUnit(this.stickerLayout.width);
   this.stickerLayout.height = stickerCanary.toUserUnit(this.stickerLayout.height);
+  this.loadImage(callBack);
+}
+
+Composition.prototype.loadImage = function(callBack) {
+  var img = new Image();
+  var self = this;
+  img.onload = function(){
+    self.conf.imgWidth = img.width;
+    self.conf.imgHeight = img.height;
+    callBack();
+  };
+  img.src = this.conf.img;
 }
 
 Composition.prototype.serialize_transform = function(t, w, h){
@@ -49,8 +61,8 @@ Composition.prototype.evalCompositionFrontCode = function(code) {
   var currentCompositionImage =
       "<g clip-path='url("+ clipId +")'>"+
            "<image id='composition-image-"+Composition.lastImageId+"' xlink:href='"+ this.conf.img + "'"+
-                 " width='100%' height='100%'"+
-                 " preserveAspectRatio='xMinYMin meet'"+
+                 " width='"+ this.conf.imgWidth +"' height='"+ this.conf.imgHeight +"'"+
+                 " preserveAspectRatio='xMinYMin slice'"+
                  " transform='"+ this.serialize_transform(this.conf.transform, width, height) +"'/>"+
       "</g>" +
       "<use xlink:href='#composition-image-"+Composition.lastImageId+"' visibility='hidden' style='opacity:0.3' />";

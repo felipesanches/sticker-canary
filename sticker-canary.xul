@@ -7,6 +7,19 @@
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
     xmlns:html="http://www.w3.org/1999/xhtml"
     onload="init()">
+  <script src="helper.js" />
+  <script src="album_test.json" />
+  <script src="composition.js" />
+  <script src="sticker-canary.js" />
+  <script>
+    function init() {
+      stickerCanary.init();
+      stickerCanary.loadAlbum(album);
+      stickerCanary.generateDoublePage(0);
+
+      $("zoomlevel_scale").value = 5;
+    }
+  </script>
 
   <toolbar>
     <toolbarbutton label="new album" oncommand='window.open("album-properties.xul", "New Album", "width=600,height=800")'/>
@@ -65,53 +78,19 @@
         function setZoom(v){
           var zoom;
           v/=20;
-          if (v<0.5){
-            zoom = v*2;
-          } else {
-            zoom = 1 + (v-0.5)*20;
+          if (v<0.5) zoom = v*2;
+          else zoom = 1 + (v-0.5)*20;
+          try {
+            stickerCanary.setZoomLevel(zoom);
+            $("zoomlevel").value = Math.round(zoom*100) + "%";
+          } catch(e) {
+            $("zoomlevel").value = "--%";
           }
-          stickerCanary.setZoomLevel(zoom);
-          document.getElementById("zoomlevel").value = Math.round(zoom*100) + "%";
         }
       ]]></script>
-      <label value="Zoom:"/><scale id="zoomlevel_scale" min="1" max="19" onchange="setZoom(this.value)"/><label id="zoomlevel" />
+      <label value="Zoom:"/><scale id="zoomlevel_scale" pageincrement="1" min="1" max="19" onchange="setZoom(this.value)"/><label id="zoomlevel" />
     </statusbarpanel>
     <resizer dir="bottomright" height="2" style="cursor: se-resize;"/>
   </statusbar>
 
-  <script src="album_test.json" />
-  <script src="composition.js" />
-  <script src="sticker-canary.js" />
-  <script>
-    function init() {
-      stickerCanary.doc = document.getElementsByTagName("svg")[0];
-      stickerCanary.loadAlbum(album);
-      stickerCanary.generateDoublePage(0);
-
-      document.getElementById("zoomlevel_scale").value = 5;
-    }
-  </script>
-  
-  <script>
-  <![CDATA[
-/*
-    testobj1 = {};
-    testobj2 = {};
-    testobj3 = {};
-    testobj4 = {};
-
-    new knot(testobj1,100,100);
-    new knot(testobj2,120,120,10,"blue");
-    new knot(testobj3,100,160,15,"green");
-    new knot(testobj4,120,100,25,"red");
-
-    document.addEventListener("mouseup", function(e){
-      alert("x1:"+testobj1.x+" y1:"+testobj1.y+
-      "\nx2:"+testobj2.x+" y2:"+testobj2.y+
-      "\nx3:"+testobj3.x+" y3:"+testobj3.y+
-      "\nx4:"+testobj4.x+" y4:"+testobj4.y);
-    }, false);
-*/
-  ]]>
-  </script>
 </window>
