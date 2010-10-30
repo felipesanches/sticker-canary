@@ -155,6 +155,9 @@ Composition.prototype.hideHandles = function(){
 }
 
 Composition.prototype.showHandles = function(){
+  //TODO: why do we need it?
+  this.updateControls();
+  
   if (Composition.selectedComposition){
     if (Composition.selectedComposition == this) return false;
     Composition.selectedComposition.hideHandles();
@@ -169,13 +172,26 @@ Composition.prototype.showHandles = function(){
   return true;
 }
 
-Composition.prototype.serializeControlsTransform = function(){
+Composition.prototype.serializeControlsTransform = function(scale){
   var transforms = {
-    imageResize1: "translate("+ (this.conf.x + this.conf.transform.x) + ","+ (this.conf.y + this.conf.transform.y) +")",
-    imageRotate1: "translate("+ (this.conf.x + this.conf.transform.x + this.imgWidth/2) +","+ (this.conf.y + this.conf.transform.y) +")",
-    compositionRotate1: "translate("+ (this.conf.x + this.conf.transform.x) +","+ (this.conf.y + this.conf.transform.y + this.imgHeight/2) +")"
+    imageResize1: "translate("+
+      scale*(this.conf.x + this.conf.transform.x) + ","+
+      scale*(this.conf.y + this.conf.transform.y) +")",
+    imageRotate1: "translate("+
+      scale*(this.conf.x + this.conf.transform.x + this.conf.transform.scale*this.imgWidth/2) +","+
+      scale*(this.conf.y + this.conf.transform.y) +")",
+    compositionRotate1: "translate("+
+      scale*(this.conf.x + this.conf.transform.x) +","+
+      scale*(this.conf.y + this.conf.transform.y + this.conf.transform.scale*this.imgHeight/2) +")"
   }
   return transforms;
+}
+
+Composition.prototype.updateControls = function(){
+  var transforms = this.serializeControlsTransform(stickerCanary.currentScale);
+  this.imgResizeHandle.setAttribute("transform", transforms.imageResize1);
+  this.imgRotateHandle.setAttribute("transform", transforms.imageRotate1);
+  this.stickerRotateHandle.setAttribute("transform", transforms.compositionRotate1);
 }
 
 Composition.prototype.generateControls = function(){
@@ -190,13 +206,14 @@ Composition.prototype.generateControls = function(){
     "file:///home/felipe/devel/sticker-canary/icons/controls.svg",
     function(success, req){
       if ( success ) {
-        var transforms = self.serializeControlsTransform();
         var imgResizeIcon = req.responseXML.getElementById("img-resizer");
         var imgRotateIcon = req.responseXML.getElementById("img-rotate");
         var stickerRotateIcon = req.responseXML.getElementById("sticker-rotate");
-        imgResizeIcon.setAttribute("transform", transforms.imageResize1);
-        imgRotateIcon.setAttribute("transform", transforms.imageRotate1);
-        stickerRotateIcon.setAttribute("transform", transforms.compositionRotate1);
+
+        self.imgResizeHandle = imgResizeIcon;
+        self.imgRotateHandle = imgRotateIcon;
+        self.stickerRotateHandle = stickerRotateIcon;
+        
         self.controls.appendChild( imgResizeIcon );
         self.controls.appendChild( imgRotateIcon );
         self.controls.appendChild( stickerRotateIcon );

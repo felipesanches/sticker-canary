@@ -34,6 +34,7 @@ function knot(obj, x0,y0,r,fill){
 const stickerCanary = new Object();
 stickerCanary.init = function() {
   this.svg = $tag("svg")[0];
+  this.compositions = [];
 }
 
 stickerCanary.getUnit = function(value) {
@@ -102,7 +103,9 @@ stickerCanary.generateDoublePage = function(doublePageIndex) {
       //create control handles on the ctrlLayer
       composition.generateControls();
     });
-    //alert(composition.conf.img)
+    
+    //TODO: review:
+    this.compositions.push(composition);
   }
 }
 
@@ -168,8 +171,13 @@ stickerCanary.loadAlbum = function(jsonAlbum) {
 }
 
 stickerCanary.setZoomLevel = function(scale){
+  stickerCanary.currentScale = scale;
   this.albumLayer.setAttribute("transform","scale("+scale+")");
   this.svg.setAttribute("width", this.dPageSize.width * scale);
   this.svg.setAttribute("height", this.dPageSize.height * scale);
+
+  for (var c in this.compositions){
+    this.compositions[c].updateControls();
+  }
 }
 
