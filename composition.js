@@ -166,7 +166,7 @@ Composition.prototype.hideHandles = function(){
 
 Composition.prototype.showHandles = function(){
   if (Composition.selectedComposition){
-    if (Composition.selectedComposition == this) return;
+    if (Composition.selectedComposition == this) return false;
     Composition.selectedComposition.hideHandles();
   }
   
@@ -174,6 +174,10 @@ Composition.prototype.showHandles = function(){
   
   var use = this.front.getElementsByTagName("use")[0];
   use.setAttribute("visibility", "visible");  
+
+  createEl("circle", { cx:100, cy:100, r:20, fill:"red", parent:this.ctrlLayer });
+
+  return true;
 }
 
 
@@ -187,10 +191,11 @@ Composition.prototype.generateFront = function() {
   var parser = new DOMParser();
   var dom = parser.parseFromString('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">'+svgCode+"</svg>", "text/xml");
 
-  const SVG_NS = "http://www.w3.org/2000/svg";
-  this.front = document.createElementNS(SVG_NS, "g");
-  this.front.setAttribute("class", "composition-front");
-  this.front.setAttribute("transform", "rotate("+this.conf.rotate+") translate("+ this.conf.x +","+ this.conf.y+")");
+  this.front = createEl("g", {
+    class: "composition-front",
+    transform: "rotate("+this.conf.rotate+")" +
+               "translate("+ this.conf.x +","+ this.conf.y+")"
+  });
   // Copy the composition front elements to the page:
   while ( dom.documentElement.hasChildNodes() ) {
     this.front.appendChild( dom.documentElement.firstChild );
@@ -206,31 +211,27 @@ Composition.prototype.generateFront = function() {
   var height = stickerCanary.toUserUnit( this.stickerLayout.height ) * this.conf.matrix.rows;
 
   //add controls:
-  var inc_scale = document.createElementNS(SVG_NS, "rect");
-  inc_scale.setAttribute("fill", "green");
-  inc_scale.setAttribute("x", 10);
-  inc_scale.setAttribute("y", 10);
-  inc_scale.setAttribute("width", 10);
-  inc_scale.setAttribute("height", 10);
-  this.front.appendChild(inc_scale);
-  inc_scale.onclick= function(){
-    self.conf.transform.rotate+=1;
-    img.setAttribute("transform",
-        self.serialize_transform(self.conf.transform, width, height));
-  };
+  createEl("rect", {
+    fill: "green",
+    x: 10, y: 10, width: 10, height: 10,
+    parent: this.front,
+    onclick: function(){
+      self.conf.transform.rotate += 1;
+      img.setAttribute("transform",
+          self.serialize_transform(self.conf.transform, width, height));
+    }
+  });
+  createEl("rect", {
+    fill: "red",
+    x: 10, y: 20, width: 10, height: 10,
+    parent: this.front,
+    onclick: function(){
+      self.conf.transform.rotate -= 1;
+      img.setAttribute("transform",
+          self.serialize_transform(self.conf.transform, width, height));
+    }
+  });
 
-  var dec_scale = document.createElementNS(SVG_NS, "rect");
-  dec_scale.setAttribute("fill", "red");
-  dec_scale.setAttribute("x", 10);
-  dec_scale.setAttribute("y", 20);
-  dec_scale.setAttribute("width", 10);
-  dec_scale.setAttribute("height", 10);
-  this.front.appendChild(dec_scale);
-  dec_scale.onclick= function(){
-    self.conf.transform.rotate-=1;
-    img.setAttribute("transform",
-        self.serialize_transform(self.conf.transform, width, height));
-  }
 }
 
 Composition.prototype.generateBack = function() {
