@@ -31,16 +31,16 @@ Composition.prototype.loadImage = function(callBack) {
   img.onload = function(){
     self.imgWidth = img.width;
     self.imgHeight = img.height;
-    self.img = this.conf.img;
+    self.img = self.conf.img;
     self.imageLoadOk = true;
-    callBack();
+    callBack(self);
   };
   img.onerror = function(){
     self.imgWidth = 157;
     self.imgHeight = 157;
     self.img = "icons/image-error.png";
     self.imageLoadOk = false;
-    callBack();
+    callBack(self);
   };
   img.src = this.conf.img;
 }

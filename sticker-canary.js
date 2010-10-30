@@ -95,12 +95,13 @@ stickerCanary.generateDoublePage = function(doublePageIndex) {
   // TODO: Put the dPage.svgExtras on the svg
   
   for ( var cName in dPage.compositions ) {
-    var composition = new Composition(cName, dPage, function(){
+    var composition = new Composition(cName, dPage, function(composition){
       // Put the Slots on the page
       composition.generateSlot();
       // Put the Stickers on the page
       composition.generateFront();
     });
+    //alert(composition.conf.img)
   }
 }
 
