@@ -93,7 +93,6 @@ Composition.prototype.evalStickerCode = function(code, number) {
     number: number
   };
   
-//  alert( "this.stickerLayout.width: " + this.stickerLayout.width)
   var stickerLayout = {
     width: this.stickerLayout.width,
     height: this.stickerLayout.height
@@ -134,8 +133,7 @@ Composition.prototype.generateSlot = function() {
         });
       parser = new DOMParser();
       dom = parser.parseFromString('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">'+svgCode+"</svg>", "text/xml");
-      //alert(svgCode);
-      
+
       // Copy the sticker slots to the group:
       while ( dom.documentElement.hasChildNodes() ) {
         slotG.appendChild( dom.documentElement.firstChild );
@@ -151,8 +149,8 @@ Composition.prototype.generateSlot = function() {
 Composition.prototype.hideHandles = function(){
   var use = this.front.getElementsByTagName("use")[0];
   use.setAttribute("visibility", "hidden");
-  //Todo: hide other elements that are used as image composition handles
-  
+  this.controls.setAttribute("visibility", "hidden");
+
   Composition.selectedComposition = null;
 }
 
@@ -166,8 +164,7 @@ Composition.prototype.showHandles = function(){
   
   var use = this.front.getElementsByTagName("use")[0];
   use.setAttribute("visibility", "visible");  
-
-  createEl("circle", { cx:100, cy:100, r:20, fill:"red", parent:this.ctrlLayer });
+  this.controls.setAttribute("visibility", "visible");
 
   return true;
 }
@@ -182,6 +179,12 @@ Composition.prototype.serializeControlsTransform = function(){
 }
 
 Composition.prototype.generateControls = function(){
+  this.controls = createEl("g", {
+    class: "controls",
+    parent: stickerCanary.ctrlLayer
+  });
+  this.controls.setAttribute("visibility", "hidden");
+
   var self = this;
   ajaxGet(
     "file:///home/felipe/devel/sticker-canary/icons/controls.svg",
@@ -194,11 +197,11 @@ Composition.prototype.generateControls = function(){
         imgResizeIcon.setAttribute("transform", transforms.imageResize1);
         imgRotateIcon.setAttribute("transform", transforms.imageRotate1);
         stickerRotateIcon.setAttribute("transform", transforms.compositionRotate1);
-        stickerCanary.ctrlLayer.appendChild( imgResizeIcon );
-        stickerCanary.ctrlLayer.appendChild( imgRotateIcon );
-        stickerCanary.ctrlLayer.appendChild( stickerRotateIcon );
+        self.controls.appendChild( imgResizeIcon );
+        self.controls.appendChild( imgRotateIcon );
+        self.controls.appendChild( stickerRotateIcon );
       } else {
-        alert("merda!");
+        alert("error while loading graphics for the control handles.");
       }
     }
   );
@@ -220,7 +223,7 @@ Composition.prototype.generateFront = function() {
     transform: "rotate("+this.conf.rotate+")" +
                "translate("+ this.conf.x +","+ this.conf.y+")"
   });
-  
+
   // Copy the composition front elements to the page:
   while ( dom.documentElement.hasChildNodes() ) {
     this.front.appendChild( dom.documentElement.firstChild );
@@ -235,6 +238,7 @@ Composition.prototype.generateFront = function() {
   var width = stickerCanary.toUserUnit( this.stickerLayout.width ) * this.conf.matrix.cols;
   var height = stickerCanary.toUserUnit( this.stickerLayout.height ) * this.conf.matrix.rows;
 
+/*
   //add controls:
   createEl("rect", {
     fill: "green",
@@ -256,6 +260,7 @@ Composition.prototype.generateFront = function() {
           self.serialize_transform(self.conf.transform, width, height));
     }
   });
+*/
 }
 
 Composition.prototype.generateBack = function() {
