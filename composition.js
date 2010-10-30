@@ -46,14 +46,6 @@ Composition.prototype.loadImage = function(callBack) {
 }
 
 Composition.prototype.serialize_transform = function(t, w, h){
-  var result = "translate(" + (t.x - w/2) + "," + (t.y - h/2) + ") ";
-  if (t.scale) result += "scale("+t.scale+") ";
-  result += "rotate("+t.rotate+") "+
-            "translate(" + w/2 + "," + h/2 + ")";
-  return result;
-}
-
-Composition.prototype.serialize_transform = function(t, w, h){
   if (!t.scale) t.scale=1;
   return "translate(" + (t.x + w/2) + "," + (t.y + h/2) + ")"+
          "scale("+t.scale+") "+
@@ -180,6 +172,38 @@ Composition.prototype.showHandles = function(){
   return true;
 }
 
+Composition.prototype.serializeControlsTransform = function(){
+  var transforms = {
+    imageResize1: "translate("+ (this.conf.x + this.conf.transform.x) + ","+ (this.conf.y + this.conf.transform.y) +")",
+    imageRotate1: "translate("+ (this.conf.x + this.conf.transform.x + this.imgWidth/2) +","+ (this.conf.y + this.conf.transform.y) +")",
+    compositionRotate1: "translate("+ (this.conf.x + this.conf.transform.x) +","+ (this.conf.y + this.conf.transform.y + this.imgHeight/2) +")"
+  }
+  return transforms;
+}
+
+Composition.prototype.generateControls = function(){
+  var self = this;
+  ajaxGet(
+    "file:///home/felipe/devel/sticker-canary/icons/controls.svg",
+    function(success, req){
+      if ( success ) {
+        var transforms = self.serializeControlsTransform();
+        var imgResizeIcon = req.responseXML.getElementById("img-resizer");
+        var imgRotateIcon = req.responseXML.getElementById("img-rotate");
+        var stickerRotateIcon = req.responseXML.getElementById("sticker-rotate");
+        imgResizeIcon.setAttribute("transform", transforms.imageResize1);
+        imgRotateIcon.setAttribute("transform", transforms.imageRotate1);
+        stickerRotateIcon.setAttribute("transform", transforms.compositionRotate1);
+        stickerCanary.ctrlLayer.appendChild( imgResizeIcon );
+        stickerCanary.ctrlLayer.appendChild( imgRotateIcon );
+        stickerCanary.ctrlLayer.appendChild( stickerRotateIcon );
+      } else {
+        alert("merda!");
+      }
+    }
+  );
+
+}
 
 Composition.prototype.generateFront = function() {
   var albumLayer = stickerCanary.albumLayer;
@@ -196,6 +220,7 @@ Composition.prototype.generateFront = function() {
     transform: "rotate("+this.conf.rotate+")" +
                "translate("+ this.conf.x +","+ this.conf.y+")"
   });
+  
   // Copy the composition front elements to the page:
   while ( dom.documentElement.hasChildNodes() ) {
     this.front.appendChild( dom.documentElement.firstChild );
@@ -231,7 +256,6 @@ Composition.prototype.generateFront = function() {
           self.serialize_transform(self.conf.transform, width, height));
     }
   });
-
 }
 
 Composition.prototype.generateBack = function() {

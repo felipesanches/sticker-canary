@@ -99,6 +99,8 @@ stickerCanary.generateDoublePage = function(doublePageIndex) {
       composition.generateSlot();
       // Put the Stickers on the page
       composition.generateFront();
+      //create control handles on the ctrlLayer
+      composition.generateControls();
     });
     //alert(composition.conf.img)
   }
@@ -163,28 +165,6 @@ stickerCanary.loadAlbum = function(jsonAlbum) {
   this.setSVGSize();
   this.albumLayer = createEl("g", { id:"album-layer", parent:this.svg });
   this.ctrlLayer = createEl("g", { id:"ctrl-layer", parent:this.svg });
-  createEl("circle", { cx:100, cy:50, r:20, fill:"#f00", parent:this.svg });
-  createEl("circle", { cx:100, cy:90, r:20, fill:"#0f0", parent:this.ctrlLayer });
-
-  var self = this;
-  ajaxGet(
-    "file:///home/felipe/devel/sticker-canary/icons/controls.svg",
-    function(success, req){
-      if ( success ) {
-        var imgResizerIcon = req.responseXML.getElementById("img-resizer");
-        var imgRotateIcon = req.responseXML.getElementById("img-rotate");
-        var stickerRotateIcon = req.responseXML.getElementById("sticker-rotate");
-        imgResizerIcon.setAttribute("transform", "translate(65,125.5)");
-        imgRotateIcon.setAttribute("transform", "translate(110,115.5)");
-        stickerRotateIcon.setAttribute("transform", "translate(55,180.5)");
-        self.ctrlLayer.appendChild( imgResizerIcon );
-        self.ctrlLayer.appendChild( imgRotateIcon );
-        self.ctrlLayer.appendChild( stickerRotateIcon );
-      } else {
-        alert("merda!");
-      }
-    }
-  );
 }
 
 stickerCanary.setZoomLevel = function(scale){
