@@ -1,36 +1,3 @@
-
-function knot(obj, x0,y0,r,fill){
-  this.ctrlLayer = StickerCanary.ctrlLayer;
-  if (!r) r=5;
-  if (!fill) fill="black";
-  this.x = x0;
-  this.y = y0;
-  this.ctrlElement = document.createElementNS(SVGNS, "circle");
-  this.ctrlElement.setAttribute("transform", "translate("+this.x+","+this.y+")");
-  this.ctrlElement.setAttribute("cx", 0);
-  this.ctrlElement.setAttribute("cy", 0);
-  this.ctrlElement.setAttribute("r", r);
-  this.ctrlElement.setAttribute("fill", fill);
-
-  this.ctrlLayer.appendChild(this.ctrlElement);
-  
-  var self = this;
-  document.addEventListener("mousemove", function(e){
-    if(self.drag){
-      self.x = e.pageX;
-      self.y = e.pageY;
-      self.ctrlElement.setAttribute("transform", "translate("+self.x+","+self.y+")");
-    }
-  }, false);
-  
-  document.addEventListener("mouseup", function(e){
-    self.drag = false;
-    obj.x = self.x;
-    obj.y = self.y;
-  }, false);
-  this.ctrlElement.onmousedown = function(e){self.drag = true;}
-}
-
 const stickerCanary = new Object();
 stickerCanary.init = function() {
   this.svg = $tag("svg")[0];

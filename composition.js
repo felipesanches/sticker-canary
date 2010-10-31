@@ -1,8 +1,3 @@
-function ImageControls(imageId){
-  this.img = document.getElementById(imageId);
-  this.transform = this.img.getAttribute("transform");
-}
-
 var compositions_visible=true;
 function toggle_compositions_display(){
   var groups = document.getElementsByTagName("g");
@@ -248,20 +243,54 @@ Composition.prototype.generateControls = function(){
             self.conf.transform.y += delta[1];
             self.initialDragX = e.pageX;
             self.initialDragY = e.pageY;
-            self.updateControls();
-            img.setAttribute("transform",
-              self.serialize_transform(self.conf.transform, self.width, self.height));
           }
+
+          if(self.resizeImage){
+            var ang = self.conf.transform.rotate * 2*PI/360;
+            var dx = (e.pageX - (self.conf.x + self.width/2))/stickerCanary.currentScale;
+            var dy = (e.pageY - (self.conf.y + self.height/2))/stickerCanary.currentScale;
+            var d = Math.sqrt(dx*dx+dy*dy);
+            var diagonal = Math.sqrt(
+                  (self.imgWidth)*(self.imgWidth)+
+                  (self.imgHeight)*(self.imgHeight));
+            self.conf.transform.scale = d/(diagonal/2);
+          }
+
+          if(self.rotateImage){
+            var dx = (e.pageX - (self.conf.x + self.width/2))/stickerCanary.currentScale;
+            var dy = (e.pageY - (self.conf.y + self.height/2))/stickerCanary.currentScale;
+            self.conf.transform.rotate = 360*Math.atan2(dy,dx)/(2*PI);
+          }
+
+          self.updateControls();
+          img.setAttribute("transform",
+            self.serialize_transform(self.conf.transform, self.width, self.height));
         }, false);
         
         document.addEventListener("mouseup", function(e){
+          self.resizeImage = false;
           self.dragImage = false;
+          self.rotateImage = false;
         }, false);
 
         self.front.getElementsByTagName("use")[0].onmousedown = function(e){
+          self.resizeImage = false;
           self.dragImage = true;
+          self.rotateImage = false;
           self.initialDragX = e.pageX;
           self.initialDragY = e.pageY;
+        }
+
+        self.imgResizeHandle.onmousedown = function(e){
+          self.resizeImage = true;
+          self.dragImage = false;
+          self.rotateImage = false;
+        }
+
+        self.imgRotateHandle.onmousedown = function(e){
+          self.resizeImage = false;
+          self.dragImage = false;
+          self.rotateImage = true;
         }
       } else {
         alert("error while loading graphics for the control handles.");
@@ -295,41 +324,6 @@ Composition.prototype.generateFront = function() {
 
   var self = this;
   this.front.addEventListener("click", function(){self.showHandles()}, false);
-
-  var img = this.front.getElementsByTagName("image")[0];
-
-  createEl("rect", {
-    fill: "green",
-    x: 10, y: 200, width: 50, height: 50,
-    parent: this.front,
-    onclick: function(){
-      self.conf.transform.rotate += 1;
-      img.setAttribute("transform",
-          self.serialize_transform(self.conf.transform, self.width, self.height));
-    }
-  });
-
-  //add controls:
-  createEl("rect", {
-    fill: "green",
-    x: 10, y: 10, width: 10, height: 10,
-    parent: this.front,
-    onclick: function(){
-      self.conf.transform.rotate += 1;
-      img.setAttribute("transform",
-          self.serialize_transform(self.conf.transform, self.width, self.height));
-    }
-  });
-  createEl("rect", {
-    fill: "red",
-    x: 10, y: 20, width: 10, height: 10,
-    parent: this.front,
-    onclick: function(){
-      self.conf.transform.rotate -= 1;
-      img.setAttribute("transform",
-          self.serialize_transform(self.conf.transform, self.width, self.height));
-    }
-  });
 }
 
 Composition.prototype.generateBack = function() {
