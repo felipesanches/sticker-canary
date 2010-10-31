@@ -49,10 +49,10 @@ Composition.prototype.loadImage = function(callBack) {
 
 Composition.prototype.serialize_transform = function(t, w, h){
   if (!t.scale) t.scale=1;
-  return "translate(" + (t.x + w/2) + "," + (t.y + h/2) + ")"+
+  return "translate(" + (w/2) + "," + (h/2) + ")"+
          "scale("+t.scale+") "+
          "rotate("+t.rotate+") "+
-         "translate(" + (-w/2)/t.scale + "," + (-h/2)/t.scale + ") ";
+         "translate(" + (t.x - w/2)/t.scale + "," + (t.y - h/2)/t.scale + ") ";
 }
 
 Composition.lastImageId = 0;
@@ -190,7 +190,7 @@ Composition.prototype.serializeControlsTransform = function(scale){
   var x = scale*(this.conf.x + this.conf.transform.x);
   var y = scale*(this.conf.y + this.conf.transform.y);
   var p = rotatedTranslateTransform(x,y, ang, x0,y0);
-  transforms.imageResize1 = "translate("+ p[0] + ","+ p[1] +") " + 
+  transforms.imageResize1 = "translate("+ p[0] + ","+ p[1] +") " +
                             "rotate("+ this.conf.transform.rotate +") ";
   
   x = scale*(this.conf.x + this.conf.transform.x + this.conf.transform.scale*this.imgWidth/2);
@@ -225,6 +225,7 @@ Composition.prototype.generateControls = function(){
     "file:///home/felipe/devel/sticker-canary/icons/controls.svg",
     function(success, req){
       if ( success ) {
+        var img = self.front.getElementsByTagName("image")[0];
         var imgResizeIcon = req.responseXML.getElementById("img-resizer");
         var imgRotateIcon = req.responseXML.getElementById("img-rotate");
         var stickerRotateIcon = req.responseXML.getElementById("sticker-rotate");
@@ -236,6 +237,32 @@ Composition.prototype.generateControls = function(){
         self.controls.appendChild( imgResizeIcon );
         self.controls.appendChild( imgRotateIcon );
         self.controls.appendChild( stickerRotateIcon );
+
+        document.addEventListener("mousemove", function(e){
+          if(self.dragImage){
+            var ang = self.conf.transform.rotate * 2*PI/360;
+            dx = (e.pageX - self.initialDragX)/stickerCanary.currentScale;
+            dy = (e.pageY - self.initialDragY)/stickerCanary.currentScale;
+            delta = rotatedTranslateTransform(dx,dy,-ang, 0,0);
+            self.conf.transform.x += delta[0];
+            self.conf.transform.y += delta[1];
+            self.initialDragX = e.pageX;
+            self.initialDragY = e.pageY;
+            self.updateControls();
+            img.setAttribute("transform",
+              self.serialize_transform(self.conf.transform, self.width, self.height));
+          }
+        }, false);
+        
+        document.addEventListener("mouseup", function(e){
+          self.dragImage = false;
+        }, false);
+
+        self.front.getElementsByTagName("use")[0].onmousedown = function(e){
+          self.dragImage = true;
+          self.initialDragX = e.pageX;
+          self.initialDragY = e.pageY;
+        }
       } else {
         alert("error while loading graphics for the control handles.");
       }
