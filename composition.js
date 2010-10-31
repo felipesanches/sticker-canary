@@ -182,29 +182,63 @@ Composition.prototype.serializeControlsTransform = function(scale){
   var ang = this.conf.transform.rotate * 2*PI/360;
   var transforms = {};
 
-  var x = scale*(this.conf.x + this.conf.transform.x);
-  var y = scale*(this.conf.y + this.conf.transform.y);
-  var p = rotatedTranslateTransform(x,y, ang, x0,y0);
-  transforms.imageResize1 = "translate("+ p[0] + ","+ p[1] +") " +
+  var XLeft = scale*(this.conf.x + this.conf.transform.x);
+  var XRight = scale*(this.conf.x + this.conf.transform.x + this.conf.transform.scale*this.imgWidth);
+  var XMid = (XLeft+XRight)/2;
+  var YTop = scale*(this.conf.y + this.conf.transform.y);
+  var YBottom = scale*(this.conf.y + this.conf.transform.y + this.conf.transform.scale*this.imgHeight);
+  var YMid = (YTop + YBottom)/2;
+
+  var p = rotatedTranslateTransform(XLeft,YTop, ang, x0,y0);
+  transforms.imageResizeTopL = "translate("+ p[0] + ","+ p[1] +") " +
                             "rotate("+ this.conf.transform.rotate +") ";
+
+  p = rotatedTranslateTransform(XRight,YTop, ang, x0,y0);
+  transforms.imageResizeTopR = "translate("+ p[0] + ","+ p[1] +") " +
+                            "rotate("+ (this.conf.transform.rotate+90) +") ";
+
+  p = rotatedTranslateTransform(XLeft,YBottom, ang, x0,y0);
+  transforms.imageResizeBottomL = "translate("+ p[0] + ","+ p[1] +") " +
+                            "rotate("+ (this.conf.transform.rotate-90) +") ";
+
+  p = rotatedTranslateTransform(XRight,YBottom, ang, x0,y0);
+  transforms.imageResizeBottomR = "translate("+ p[0] + ","+ p[1] +") " +
+                            "rotate("+ (this.conf.transform.rotate+180) +") ";
   
-  x = scale*(this.conf.x + this.conf.transform.x + this.conf.transform.scale*this.imgWidth/2);
-  y = scale*(this.conf.y + this.conf.transform.y);
-  p = rotatedTranslateTransform(x,y, ang, x0,y0);
-  transforms.imageRotate1 = "translate("+ p[0] + ","+ p[1] +") " +
+  p = rotatedTranslateTransform(XMid,YTop, ang, x0,y0);
+  transforms.imageRotateTop = "translate("+ p[0] + ","+ p[1] +") " +
                             "rotate("+ this.conf.transform.rotate +")";
-  x = scale*(this.conf.x + this.conf.transform.x);
-  y = scale*(this.conf.y + this.conf.transform.y + this.conf.transform.scale*this.imgHeight/2);
+
+  p = rotatedTranslateTransform(XRight,YMid, ang, x0,y0);
+  transforms.imageRotateRight = "translate("+ p[0] + ","+ p[1] +") " +
+                            "rotate("+ (this.conf.transform.rotate + 90) +")";
+
+  p = rotatedTranslateTransform(XMid,YBottom, ang, x0,y0);
+  transforms.imageRotateBottom = "translate("+ p[0] + ","+ p[1] +") " +
+                            "rotate("+ (this.conf.transform.rotate + 180) +")";
+
+  p = rotatedTranslateTransform(XLeft,YMid, ang, x0,y0);
+  transforms.imageRotateLeft = "translate("+ p[0] + ","+ p[1] +") " +
+                            "rotate("+ (this.conf.transform.rotate - 90) +")";
+
+/*
   p = rotatedTranslateTransform(x,y, ang, x0,y0);
   transforms.compositionRotate1 = "translate("+ p[0] + ","+ p[1] +") "+
                                   "rotate("+ this.conf.transform.rotate +")";
+*/                                  
   return transforms;
 }
 
 Composition.prototype.updateControls = function(){
   var transforms = this.serializeControlsTransform(stickerCanary.currentScale);
-  this.imgResizeHandle.setAttribute("transform", transforms.imageResize1);
-  this.imgRotateHandle.setAttribute("transform", transforms.imageRotate1);
+  this.imgResizeHandleTopL.setAttribute("transform", transforms.imageResizeTopL);
+  this.imgResizeHandleTopR.setAttribute("transform", transforms.imageResizeTopR);
+  this.imgResizeHandleBottomL.setAttribute("transform", transforms.imageResizeBottomL);
+  this.imgResizeHandleBottomR.setAttribute("transform", transforms.imageResizeBottomR);
+  this.imgRotateHandleTop.setAttribute("transform", transforms.imageRotateTop);
+  this.imgRotateHandleRight.setAttribute("transform", transforms.imageRotateRight);
+  this.imgRotateHandleBottom.setAttribute("transform", transforms.imageRotateBottom);
+  this.imgRotateHandleLeft.setAttribute("transform", transforms.imageRotateLeft);
   this.stickerRotateHandle.setAttribute("transform", transforms.compositionRotate1);
 }
 
@@ -225,12 +259,24 @@ Composition.prototype.generateControls = function(){
         var imgRotateIcon = req.responseXML.getElementById("img-rotate");
         var stickerRotateIcon = req.responseXML.getElementById("sticker-rotate");
 
-        self.imgResizeHandle = imgResizeIcon;
-        self.imgRotateHandle = imgRotateIcon;
+        self.imgResizeHandleTopL = imgResizeIcon.cloneNode(true);
+        self.imgResizeHandleTopR = imgResizeIcon.cloneNode(true);
+        self.imgResizeHandleBottomL = imgResizeIcon.cloneNode(true);
+        self.imgResizeHandleBottomR = imgResizeIcon.cloneNode(true);
+        self.imgRotateHandleTop = imgRotateIcon.cloneNode(true);
+        self.imgRotateHandleRight = imgRotateIcon.cloneNode(true);
+        self.imgRotateHandleBottom = imgRotateIcon.cloneNode(true);
+        self.imgRotateHandleLeft = imgRotateIcon.cloneNode(true);
         self.stickerRotateHandle = stickerRotateIcon;
         
-        self.controls.appendChild( imgResizeIcon );
-        self.controls.appendChild( imgRotateIcon );
+        self.controls.appendChild( self.imgResizeHandleTopL );
+        self.controls.appendChild( self.imgResizeHandleTopR );
+        self.controls.appendChild( self.imgResizeHandleBottomL );
+        self.controls.appendChild( self.imgResizeHandleBottomR );
+        self.controls.appendChild( self.imgRotateHandleTop );
+        self.controls.appendChild( self.imgRotateHandleRight );
+        self.controls.appendChild( self.imgRotateHandleBottom );
+        self.controls.appendChild( self.imgRotateHandleLeft );
         self.controls.appendChild( stickerRotateIcon );
 
         document.addEventListener("mousemove", function(e){
@@ -281,13 +327,19 @@ Composition.prototype.generateControls = function(){
           self.initialDragY = e.pageY;
         }
 
-        self.imgResizeHandle.onmousedown = function(e){
+        self.imgResizeHandleTopL.onmousedown = 
+        self.imgResizeHandleTopR.onmousedown = 
+        self.imgResizeHandleBottomL.onmousedown = 
+        self.imgResizeHandleBottomR.onmousedown = function(e){
           self.resizeImage = true;
           self.dragImage = false;
           self.rotateImage = false;
         }
 
-        self.imgRotateHandle.onmousedown = function(e){
+        self.imgRotateHandleTop.onmousedown = 
+        self.imgRotateHandleRight.onmousedown = 
+        self.imgRotateHandleBottom.onmousedown = 
+        self.imgRotateHandleLeft.onmousedown = function(e){
           self.resizeImage = false;
           self.dragImage = false;
           self.rotateImage = true;
