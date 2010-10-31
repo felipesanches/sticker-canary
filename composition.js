@@ -22,6 +22,8 @@ function Composition(cName, dPage, callBack) {
   this.stickerLayout = stickerCanary.currentAlbum.stickerLayout;
   this.stickerLayout.width = stickerCanary.toUserUnit(this.stickerLayout.width);
   this.stickerLayout.height = stickerCanary.toUserUnit(this.stickerLayout.height);
+  this.width = stickerCanary.toUserUnit( this.stickerLayout.width ) * this.conf.matrix.cols;
+  this.height = stickerCanary.toUserUnit( this.stickerLayout.height ) * this.conf.matrix.rows;
   this.loadImage(callBack);
 }
 
@@ -172,18 +174,35 @@ Composition.prototype.showHandles = function(){
   return true;
 }
 
+function rotatedTranslateTransform(x,y, ang, x0,y0){
+  var px = Math.cos(ang)*(x - x0) - Math.sin(ang)*(y-y0) + x0;
+  var py = Math.sin(ang)*(x - x0) + Math.cos(ang)*(y-y0) + y0;
+  return [px, py];
+}
+
+const PI = 3.1415;
 Composition.prototype.serializeControlsTransform = function(scale){
-  var transforms = {
-    imageResize1: "translate("+
-      scale*(this.conf.x + this.conf.transform.x) + ","+
-      scale*(this.conf.y + this.conf.transform.y) +")",
-    imageRotate1: "translate("+
-      scale*(this.conf.x + this.conf.transform.x + this.conf.transform.scale*this.imgWidth/2) +","+
-      scale*(this.conf.y + this.conf.transform.y) +")",
-    compositionRotate1: "translate("+
-      scale*(this.conf.x + this.conf.transform.x) +","+
-      scale*(this.conf.y + this.conf.transform.y + this.conf.transform.scale*this.imgHeight/2) +")"
-  }
+  var x0 = scale*(this.conf.x + this.width/2);
+  var y0 = scale*(this.conf.y + this.height/2);
+  var ang = this.conf.transform.rotate * 2*PI/360;
+  var transforms = {};
+
+  var x = scale*(this.conf.x + this.conf.transform.x);
+  var y = scale*(this.conf.y + this.conf.transform.y);
+  var p = rotatedTranslateTransform(x,y, ang, x0,y0);
+  transforms.imageResize1 = "translate("+ p[0] + ","+ p[1] +") " + 
+                            "rotate("+ this.conf.transform.rotate +") ";
+  
+  x = scale*(this.conf.x + this.conf.transform.x + this.conf.transform.scale*this.imgWidth/2);
+  y = scale*(this.conf.y + this.conf.transform.y);
+  p = rotatedTranslateTransform(x,y, ang, x0,y0);
+  transforms.imageRotate1 = "translate("+ p[0] + ","+ p[1] +") " +
+                            "rotate("+ this.conf.transform.rotate +")";
+  x = scale*(this.conf.x + this.conf.transform.x);
+  y = scale*(this.conf.y + this.conf.transform.y + this.conf.transform.scale*this.imgHeight/2);
+  p = rotatedTranslateTransform(x,y, ang, x0,y0);
+  transforms.compositionRotate1 = "translate("+ p[0] + ","+ p[1] +") "+
+                                  "rotate("+ this.conf.transform.rotate +")";
   return transforms;
 }
 
@@ -251,11 +270,18 @@ Composition.prototype.generateFront = function() {
   this.front.addEventListener("click", function(){self.showHandles()}, false);
 
   var img = this.front.getElementsByTagName("image")[0];
-  
-  var width = stickerCanary.toUserUnit( this.stickerLayout.width ) * this.conf.matrix.cols;
-  var height = stickerCanary.toUserUnit( this.stickerLayout.height ) * this.conf.matrix.rows;
 
-/*
+  createEl("rect", {
+    fill: "green",
+    x: 10, y: 200, width: 50, height: 50,
+    parent: this.front,
+    onclick: function(){
+      self.conf.transform.rotate += 1;
+      img.setAttribute("transform",
+          self.serialize_transform(self.conf.transform, self.width, self.height));
+    }
+  });
+
   //add controls:
   createEl("rect", {
     fill: "green",
@@ -264,7 +290,7 @@ Composition.prototype.generateFront = function() {
     onclick: function(){
       self.conf.transform.rotate += 1;
       img.setAttribute("transform",
-          self.serialize_transform(self.conf.transform, width, height));
+          self.serialize_transform(self.conf.transform, self.width, self.height));
     }
   });
   createEl("rect", {
@@ -274,10 +300,9 @@ Composition.prototype.generateFront = function() {
     onclick: function(){
       self.conf.transform.rotate -= 1;
       img.setAttribute("transform",
-          self.serialize_transform(self.conf.transform, width, height));
+          self.serialize_transform(self.conf.transform, self.width, self.height));
     }
   });
-*/
 }
 
 Composition.prototype.generateBack = function() {
