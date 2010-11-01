@@ -8,29 +8,37 @@
     xmlns:html="http://www.w3.org/1999/xhtml"
     onload="init()">
   <script src="helper.js" />
-  <!-- script src="album_test.json" / -->
   <script src="composition.js" />
   <script src="sticker-canary.js" />
   <script src="chrome://jslib/content/jslib.js" />
   <script>
-    try {
-      include(jslib_dir)
-      include(jslib_dirutils)
-      var du = new DirUtils; 
-      dir = new Dir(du.getChromeDir());
-      alert( "Base dir:"+ dir.parent.path )
-      include("file://"+dir.parent.path+"/album_test.json")
-    } catch(e) {
-      alert("merda: "+e)
-    }
-  </script>
-  <script>
     function init() {
-      stickerCanary.init();
-      stickerCanary.loadAlbum(album);
-      stickerCanary.generateDoublePage(0);
+      try {
 
-      $("zoomlevel_scale").value = 5;
+        // Initialize App singleton:
+        stickerCanary.init();
+
+        // Load the test album:
+        stickerCanary.loadAlbum(
+          "file://"+stickerCanary.appDir.append("album_test.json"),
+          function (success, ErrorMsg) {
+            if ( success ) {
+              // Show the first page:
+              stickerCanary.generateDoublePage(0);
+              $("zoomlevel_scale").value = 5;
+            } else {
+              alert(ErrorMsg)
+            }
+          }
+        );
+
+        // TODO: The zoom must work here. The SVG initializatin must be on init().
+        // $("zoomlevel_scale").value = 5;
+
+      } catch(e) {
+        alert("App Initializer ERROR:\n\n"+e+
+              "\n\n"+e.fileName+" Line "+e.lineNumber)
+      }
     }
   </script>
 

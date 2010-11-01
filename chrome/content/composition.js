@@ -260,7 +260,7 @@ Composition.prototype.generateControls = function(){
 
   var self = this;
   ajaxGet(
-    "file:///home/felipe/devel/sticker-canary/icons/controls.svg",
+    "icons/controls.svg",
     function(success, req){
       if ( success ) {
         var img = self.front.getElementsByTagName("image")[0];

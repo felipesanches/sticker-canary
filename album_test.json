@@ -1,4 +1,4 @@
-album = {
+{
   config : {
     outputStructure: "single page",
     bleadMargin: "0",
@@ -65,9 +65,9 @@ album = {
       svgExtra: "svg fragment",
       metadata : {
         "<name>": "<value>",  // alimenta espaços da masterPage
-        //...
+        /* ... */
       }
     },
- //   ...
+    /* ... */
   ]
 }

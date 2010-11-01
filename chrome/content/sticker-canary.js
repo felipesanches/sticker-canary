@@ -1,7 +1,14 @@
 const stickerCanary = new Object();
+
 stickerCanary.init = function() {
   this.svg = $tag("svg")[0];
   this.compositions = [];
+  include(jslib_dir)
+  include(jslib_dirutils)
+  var dirUtils = new DirUtils; 
+  chromeDir = new Dir(dirUtils.getChromeDir());
+  this.appDir = chromeDir.parent;
+  //alert(this.appDir)//.append("xxx") )
 }
 
 stickerCanary.getUnit = function(value) {
@@ -129,12 +136,38 @@ stickerCanary.setSVGSize = function(){
   this.svg.setAttribute( "height", this.dPageSize.height );
 }
 
-stickerCanary.loadAlbum = function(jsonAlbum) {
-  this.currentAlbum = jsonAlbum;
+stickerCanary.loadAlbum = function(albumURI, callBack) {
+  ajaxGet( albumURI,
+    function(success, req){
+      if ( success ) {
+        try {
+          //TODO: Replace eval by native JSON decode.
+          eval("var album = "+req.responseText);
+          stickerCanary.loadAlbumFromJSON( album, callBack );
+        } catch(e) {
+          callBack(false, "JSON parsing ERROR:\n"+e);
+        }
+      } else {
+        callBack(false, 'Fail to load Album "'+albumURI+'".');
+      }
+      return success;
+    }
+  );
+  // This is a option to replace ajaxGet, but is not working
+  //var loader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"]  
+  //                       .getService(Components.interfaces.mozIJSSubScriptLoader);
+  //var album;
+  //loader.loadSubScript(albumURI, album);
+  //this.loadAlbumFromJSON( album );
+}
+
+stickerCanary.loadAlbumFromJSON = function(albumJSON, callBack) {
+  this.currentAlbum = albumJSON;
   this.generateStickersNumbering();
   this.setSVGSize();
   this.albumLayer = createEl("g", { id:"album-layer", parent:this.svg });
   this.ctrlLayer = createEl("g", { id:"ctrl-layer", parent:this.svg });
+  callBack(true, "No error");
 }
 
 stickerCanary.setZoomLevel = function(scale){
