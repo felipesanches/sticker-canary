@@ -6,6 +6,15 @@ function toggle_compositions_display(){
     if (g.className && g.className.baseVal == "composition-front")
       g.setAttribute("visibility", compositions_visible ? "hidden":"visible");
   }
+
+  if (Composition.selectedComposition){
+    if (compositions_visible) {
+      Composition.selectedComposition.hideHandles();
+    }else {
+      Composition.selectedComposition.showHandles();
+    }
+  }
+
   compositions_visible=!compositions_visible;
 }
 
