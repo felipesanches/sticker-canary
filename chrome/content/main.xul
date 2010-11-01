@@ -8,9 +8,22 @@
     xmlns:html="http://www.w3.org/1999/xhtml"
     onload="init()">
   <script src="helper.js" />
-  <script src="album_test.json" />
+  <!-- script src="album_test.json" / -->
   <script src="composition.js" />
   <script src="sticker-canary.js" />
+  <script src="chrome://jslib/content/jslib.js" />
+  <script>
+    try {
+      include(jslib_dir)
+      include(jslib_dirutils)
+      var du = new DirUtils; 
+      dir = new Dir(du.getChromeDir());
+      alert( "Base dir:"+ dir.parent.path )
+      include("file://"+dir.parent.path+"/album_test.json")
+    } catch(e) {
+      alert("merda: "+e)
+    }
+  </script>
   <script>
     function init() {
       stickerCanary.init();

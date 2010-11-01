@@ -1,2 +1,2 @@
-content sticker-canary file:content/
-
+content  sticker-canary  file:content/
+content  jslib           jar:jslib.jar!/
