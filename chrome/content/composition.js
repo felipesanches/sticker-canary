@@ -117,15 +117,15 @@ Composition.prototype.generateSlot = function() {
   var parser = new DOMParser();
   var dom = parser.parseFromString('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">'+svgCode+"</svg>", "text/xml");
 
-  var group = document.createElementNS("http://www.w3.org/2000/svg", "g");
-  group.setAttribute("class", "composition-slot");
-  group.setAttribute("transform", "translate("+ this.conf.x +","+ this.conf.y 
+  this.slot = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  this.slot.setAttribute("class", "composition-slot");
+  this.slot.setAttribute("transform", "translate("+ this.conf.x +","+ this.conf.y 
                                   +") rotate("+this.conf.rotate+")");
   // Copy the composition slots to the page:
   while ( dom.documentElement.hasChildNodes() ) {
-    group.appendChild( dom.documentElement.firstChild );
+    this.slot.appendChild( dom.documentElement.firstChild );
   };
-  albumLayer.appendChild(group);
+  albumLayer.appendChild(this.slot);
 
   // Copy the sticker slots to the page:
   for (var row=0; row<this.conf.matrix.rows; row++){
@@ -146,7 +146,7 @@ Composition.prototype.generateSlot = function() {
       };
       
       slotG.setAttribute("transform", "translate("+ col*this.stickerLayout.width +","+ row*this.stickerLayout.height +")");
-      group.appendChild(slotG);
+      this.slot.appendChild(slotG);
     }
   }
 
@@ -270,6 +270,13 @@ Composition.prototype.serializeControlsTransform = function(scale){
   return transforms;
 }
 
+Composition.prototype.updateCompositionTransform = function(){
+  var transform = "rotate("+this.conf.rotate+") " +
+               "translate("+ this.conf.x +","+ this.conf.y+")";
+  this.front.setAttribute("transform", transform);
+  this.slot.setAttribute("transform", transform);  
+}
+               
 Composition.prototype.updateControls = function(){
   var transforms = this.serializeControlsTransform(stickerCanary.currentScale);
   this.imgResizeHandleTopL.setAttribute("transform", transforms.imageResizeTopL);
@@ -379,7 +386,20 @@ Composition.prototype.generateControls = function(){
             self.initialAngle = angle;
           }
 
+          if(self.dragComposition){
+            var ang = self.conf.rotate * 2*PI/360;
+            dx = (e.pageX - self.initialDragX)/stickerCanary.currentScale;
+            dy = (e.pageY - self.initialDragY)/stickerCanary.currentScale;
+            delta = rotatedTranslateTransform(dx,dy,-ang, 0,0);
+            self.conf.x += delta[0];
+            self.conf.y += delta[1];
+            self.initialDragX = e.pageX;
+            self.initialDragY = e.pageY;
+            self.updateCompositionTransform();
+          }
+
           self.updateControls();
+
           img.setAttribute("transform",
             self.serialize_transform(self.conf.transform, self.width, self.height));
         }, false);
@@ -388,6 +408,8 @@ Composition.prototype.generateControls = function(){
           self.resizeImage = false;
           self.dragImage = false;
           self.rotateImage = false;
+          self.rotateCompostion = false;
+          self.dragComposition = false;
         }, false);
 
         self.front.getElementsByTagName("use")[0].onmousedown = function(e){
@@ -396,6 +418,14 @@ Composition.prototype.generateControls = function(){
           self.rotateImage = false;
           self.initialDragX = e.pageX;
           self.initialDragY = e.pageY;
+        }
+
+        self.front.onmousedown = function(e){
+          if (stickerCanary.compositionEditMode){
+            self.dragComposition = true;
+            self.initialDragX = e.pageX;
+            self.initialDragY = e.pageY;
+          }
         }
 
         self.imgResizeHandleTopL.onmousedown = 
