@@ -42,8 +42,8 @@ Composition.prototype.loadImage = function(callBack) {
     callBack(self);
   };
   img.onerror = function(){
-    self.imgWidth = 157;
-    self.imgHeight = 157;
+    self.imgWidth = 157/self.conf.transform.scale;
+    self.imgHeight = 157/self.conf.transform.scale;
     self.img = "icons/image-error.png";
     self.imageLoadOk = false;
     callBack(self);
