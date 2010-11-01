@@ -279,6 +279,14 @@ Composition.prototype.generateControls = function(){
         self.controls.appendChild( self.imgRotateHandleLeft );
         self.controls.appendChild( stickerRotateIcon );
 
+        function pointerSVGCoordinates(e){
+          var CTM = stickerCanary.albumLayer.getScreenCTM();
+          var p = stickerCanary.svg.createSVGPoint();
+          p.x = e.pageX;
+          p.y = e.pageY;
+          return p.matrixTransform(CTM.inverse());
+        }
+
         document.addEventListener("mousemove", function(e){
           if(self.dragImage){
             var ang = self.conf.transform.rotate * 2*PI/360;
@@ -292,19 +300,21 @@ Composition.prototype.generateControls = function(){
           }
 
           if(self.resizeImage){
+            var p = pointerSVGCoordinates(e);
             var ang = self.conf.transform.rotate * 2*PI/360;
-            var dx = (e.pageX - (self.conf.x + self.width/2))/stickerCanary.currentScale;
-            var dy = (e.pageY - (self.conf.y + self.height/2))/stickerCanary.currentScale;
+            var dx = (p.x - (self.conf.x + self.width/2))/stickerCanary.currentScale;
+            var dy = (p.y - (self.conf.y + self.height/2))/stickerCanary.currentScale;
             var d = Math.sqrt(dx*dx+dy*dy);
             var diagonal = Math.sqrt(
                   (self.imgWidth)*(self.imgWidth)+
                   (self.imgHeight)*(self.imgHeight));
-            self.conf.transform.scale = d/(diagonal/2);
+            self.conf.transform.scale = d/(diagonal/1);
           }
 
           if(self.rotateImage){
-            var dx = (e.pageX - (self.conf.x + self.width/2))/stickerCanary.currentScale;
-            var dy = (e.pageY - (self.conf.y + self.height/2))/stickerCanary.currentScale;
+            var p = pointerSVGCoordinates(e);
+            var dx = (p.x - (self.conf.x + self.width/2))/stickerCanary.currentScale;
+            var dy = (p.y - (self.conf.y + self.height/2))/stickerCanary.currentScale;
             self.conf.transform.rotate = 360*Math.atan2(dy,dx)/(2*PI);
           }
 
@@ -374,7 +384,6 @@ Composition.prototype.generateFront = function() {
   };
   albumLayer.appendChild(this.front);
 
-  var self = this;
   this.front.addEventListener("click", function(){self.showHandles()}, false);
 }
 
