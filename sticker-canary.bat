@@ -1,0 +1,1 @@
+firefox --app application.ini
