@@ -166,7 +166,12 @@ stickerCanary.loadAlbumFromJSON = function(albumJSON, callBack) {
   this.generateStickersNumbering();
   this.setSVGSize();
   this.albumLayer = createEl("g", { id:"album-layer", parent:this.svg });
-  this.ctrlLayer = createEl("g", { id:"ctrl-layer", parent:this.svg });
+  this.ctrlLayer = createEl("g", { id:"ctrl-layer", parent:this.svg });  
+  this.albumLayer.addEventListener("click", function(e){
+    if(e.target.tagName != "image"){ //This may break when we add background images...
+      Composition.selectedComposition.hideHandles();
+    }
+  }, false);
   callBack(true, "No error");
 }
 
