@@ -271,8 +271,10 @@ Composition.prototype.serializeControlsTransform = function(scale){
 }
 
 Composition.prototype.updateCompositionTransform = function(){
-  var transform = "rotate("+this.conf.rotate+") " +
-               "translate("+ this.conf.x +","+ this.conf.y+")";
+  var transform = "translate(" + (this.conf.x + this.width/2) + "," + (this.conf.y + this.height/2) + ")"+
+         "rotate("+this.conf.rotate+") "+
+         "translate(" + (-this.width/2) + "," + (-this.height/2) + ") ";
+
   this.front.setAttribute("transform", transform);
   this.slot.setAttribute("transform", transform);  
 }
@@ -288,10 +290,10 @@ Composition.prototype.updateControls = function(){
   this.imgRotateHandleBottom.setAttribute("transform", transforms.imageRotateBottom);
   this.imgRotateHandleLeft.setAttribute("transform", transforms.imageRotateLeft);
   
-  this.stickerRotateHandleTop.setAttribute("transform", transforms.compositionRotateTop);
-  this.stickerRotateHandleRight.setAttribute("transform", transforms.compositionRotateRight);
-  this.stickerRotateHandleBottom.setAttribute("transform", transforms.compositionRotateBottom);
-  this.stickerRotateHandleLeft.setAttribute("transform", transforms.compositionRotateLeft);
+  this.compositionRotateHandleTop.setAttribute("transform", transforms.compositionRotateTop);
+  this.compositionRotateHandleRight.setAttribute("transform", transforms.compositionRotateRight);
+  this.compositionRotateHandleBottom.setAttribute("transform", transforms.compositionRotateBottom);
+  this.compositionRotateHandleLeft.setAttribute("transform", transforms.compositionRotateLeft);
 }
 
 Composition.prototype.generateControls = function(){
@@ -327,10 +329,10 @@ Composition.prototype.generateControls = function(){
         self.imgRotateHandleBottom = imgRotateIcon.cloneNode(true);
         self.imgRotateHandleLeft = imgRotateIcon.cloneNode(true);
 
-        self.stickerRotateHandleTop = stickerRotateIcon.cloneNode(true);
-        self.stickerRotateHandleRight = stickerRotateIcon.cloneNode(true);
-        self.stickerRotateHandleBottom = stickerRotateIcon.cloneNode(true);
-        self.stickerRotateHandleLeft = stickerRotateIcon.cloneNode(true);
+        self.compositionRotateHandleTop = stickerRotateIcon.cloneNode(true);
+        self.compositionRotateHandleRight = stickerRotateIcon.cloneNode(true);
+        self.compositionRotateHandleBottom = stickerRotateIcon.cloneNode(true);
+        self.compositionRotateHandleLeft = stickerRotateIcon.cloneNode(true);
         
         self.imageControls.appendChild( self.imgResizeHandleTopL );
         self.imageControls.appendChild( self.imgResizeHandleTopR );
@@ -340,10 +342,10 @@ Composition.prototype.generateControls = function(){
         self.imageControls.appendChild( self.imgRotateHandleRight );
         self.imageControls.appendChild( self.imgRotateHandleBottom );
         self.imageControls.appendChild( self.imgRotateHandleLeft );
-        self.compositionControls.appendChild( self.stickerRotateHandleTop );
-        self.compositionControls.appendChild( self.stickerRotateHandleRight );
-        self.compositionControls.appendChild( self.stickerRotateHandleBottom );
-        self.compositionControls.appendChild( self.stickerRotateHandleLeft );
+        self.compositionControls.appendChild( self.compositionRotateHandleTop );
+        self.compositionControls.appendChild( self.compositionRotateHandleRight );
+        self.compositionControls.appendChild( self.compositionRotateHandleBottom );
+        self.compositionControls.appendChild( self.compositionRotateHandleLeft );
 
         function pointerSVGCoordinates(e){
           var CTM = stickerCanary.albumLayer.getScreenCTM();
@@ -398,6 +400,16 @@ Composition.prototype.generateControls = function(){
             self.updateCompositionTransform();
           }
 
+          if(self.rotateComposition){
+            var p = pointerSVGCoordinates(e);
+            var dx = (p.x - (self.conf.x + self.width/2))/stickerCanary.currentScale;
+            var dy = (p.y - (self.conf.y + self.height/2))/stickerCanary.currentScale;
+            var angle = 360*Math.atan2(dy,dx)/(2*PI);
+            self.conf.rotate += angle - self.initialAngle;
+            self.initialAngle = angle;
+            self.updateCompositionTransform();
+          }
+
           self.updateControls();
 
           img.setAttribute("transform",
@@ -408,7 +420,7 @@ Composition.prototype.generateControls = function(){
           self.resizeImage = false;
           self.dragImage = false;
           self.rotateImage = false;
-          self.rotateCompostion = false;
+          self.rotateComposition = false;
           self.dragComposition = false;
         }, false);
 
@@ -449,6 +461,18 @@ Composition.prototype.generateControls = function(){
           var dy = (p.y - (self.conf.y + self.height/2))/stickerCanary.currentScale;
           self.initialAngle = 360*Math.atan2(dy,dx)/(2*PI);
         }
+
+        self.compositionRotateHandleRight.onmousedown =
+        self.compositionRotateHandleTop.onmousedown =
+        self.compositionRotateHandleLeft.onmousedown =
+        self.compositionRotateHandleBottom.onmousedown =  function(e){
+          self.dragComposition = false;
+          self.rotateComposition = true;
+          var p = pointerSVGCoordinates(e);
+          var dx = (p.x - (self.conf.x + self.width/2))/stickerCanary.currentScale;
+          var dy = (p.y - (self.conf.y + self.height/2))/stickerCanary.currentScale;
+          self.initialAngle = 360*Math.atan2(dy,dx)/(2*PI);
+        }
       } else {
         alert("error while loading graphics for the control handles.");
       }
@@ -469,9 +493,9 @@ Composition.prototype.generateFront = function() {
 
   this.front = createEl("g", {
     class: "composition-front",
-    transform: "rotate("+this.conf.rotate+")" +
-               "translate("+ this.conf.x +","+ this.conf.y+")"
   });
+
+  this.updateCompositionTransform();
 
   // Copy the composition front elements to the page:
   while ( dom.documentElement.hasChildNodes() ) {
