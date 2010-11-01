@@ -324,7 +324,9 @@ Composition.prototype.generateControls = function(){
             var p = pointerSVGCoordinates(e);
             var dx = (p.x - (self.conf.x + self.width/2))/stickerCanary.currentScale;
             var dy = (p.y - (self.conf.y + self.height/2))/stickerCanary.currentScale;
-            self.conf.transform.rotate = self.angleOffset + 360*Math.atan2(dy,dx)/(2*PI);
+            var angle = 360*Math.atan2(dy,dx)/(2*PI);
+            self.conf.transform.rotate += angle - self.initialAngle;
+            self.initialAngle = angle;
           }
 
           self.updateControls();
@@ -355,32 +357,17 @@ Composition.prototype.generateControls = function(){
           self.rotateImage = false;
         }
 
-        self.imgRotateHandleRight.onmousedown =  function(e){
-          self.resizeImage = false;
-          self.dragImage = false;
-          self.rotateImage = true;
-          self.angleOffset = 0;
-        }
-
-        self.imgRotateHandleTop.onmousedown =  function(e){
-          self.resizeImage = false;
-          self.dragImage = false;
-          self.rotateImage = true;
-          self.angleOffset = 90;
-        }
-
-        self.imgRotateHandleLeft.onmousedown = function(e){
-          self.resizeImage = false;
-          self.dragImage = false;
-          self.rotateImage = true;
-          self.angleOffset = 180;
-        }
-
+        self.imgRotateHandleRight.onmousedown =
+        self.imgRotateHandleTop.onmousedown =
+        self.imgRotateHandleLeft.onmousedown =
         self.imgRotateHandleBottom.onmousedown =  function(e){
           self.resizeImage = false;
           self.dragImage = false;
           self.rotateImage = true;
-          self.angleOffset = 270;
+          var p = pointerSVGCoordinates(e);
+          var dx = (p.x - (self.conf.x + self.width/2))/stickerCanary.currentScale;
+          var dy = (p.y - (self.conf.y + self.height/2))/stickerCanary.currentScale;
+          self.initialAngle = 360*Math.atan2(dy,dx)/(2*PI);
         }
       } else {
         alert("error while loading graphics for the control handles.");
