@@ -311,13 +311,13 @@ Composition.prototype.generateControls = function(){
           if(self.resizeImage){
             var p = pointerSVGCoordinates(e);
             var ang = self.conf.transform.rotate * 2*PI/360;
-            var dx = (p.x - (self.conf.x + self.width/2))/stickerCanary.currentScale;
-            var dy = (p.y - (self.conf.y + self.height/2))/stickerCanary.currentScale;
+            var dx = p.x - (self.conf.x + self.width/2);
+            var dy = p.y - (self.conf.y + self.height/2);
             var d = Math.sqrt(dx*dx+dy*dy);
             var diagonal = Math.sqrt(
                   (self.imgWidth)*(self.imgWidth)+
                   (self.imgHeight)*(self.imgHeight));
-            self.conf.transform.scale = d/(diagonal/1);
+            self.conf.transform.scale = d/(diagonal/2);
           }
 
           if(self.rotateImage){
