@@ -155,7 +155,8 @@ Composition.prototype.generateSlot = function() {
 Composition.prototype.hideHandles = function(){
   var use = this.front.getElementsByTagName("use")[0];
   use.setAttribute("visibility", "hidden");
-  this.controls.setAttribute("visibility", "hidden");
+  this.imageControls.setAttribute("visibility", "hidden");
+  this.compositionControls.setAttribute("visibility", "hidden");
 
   Composition.selectedComposition = null;
 }
@@ -165,15 +166,26 @@ Composition.prototype.showHandles = function(){
   this.updateControls();
   
   if (Composition.selectedComposition){
-    if (Composition.selectedComposition == this) return false;
     Composition.selectedComposition.hideHandles();
   }
+  Composition.selectedComposition = this;  
   
-  Composition.selectedComposition = this;
-  
-  var use = this.front.getElementsByTagName("use")[0];
-  use.setAttribute("visibility", "visible");  
-  this.controls.setAttribute("visibility", "visible");
+  switch(stickerCanary.editMode){
+    case stickerCanary.imageEditMode:
+      var use = this.front.getElementsByTagName("use")[0];
+      use.setAttribute("visibility", "visible");
+      this.imageControls.setAttribute("visibility", "visible");
+      break;
+    case stickerCanary.compositionEditMode:
+      this.compositionControls.setAttribute("visibility", "visible");
+      break;
+    case stickerCanary.backgroundImageEditMode:
+      alert("background mode");
+      break;
+    default:
+      alert("default");
+      break;
+  }
 
   return true;
 }
@@ -230,11 +242,31 @@ Composition.prototype.serializeControlsTransform = function(scale){
   transforms.imageRotateLeft = "translate("+ p[0] + ","+ p[1] +") " +
                             "rotate("+ (this.conf.transform.rotate - 90) +")";
 
-/*
-  p = rotatedTranslateTransform(x,y, ang, x0,y0);
-  transforms.compositionRotate1 = "translate("+ p[0] + ","+ p[1] +") "+
-                                  "rotate("+ this.conf.transform.rotate +")";
-*/                                  
+  ang = this.conf.rotate * 2*PI/360;
+
+  var cXLeft = scale*(this.conf.x);
+  var cXRight = scale*(this.conf.x + this.width);
+  var cXMid = (cXLeft+cXRight)/2;
+  var cYTop = scale*(this.conf.y);
+  var cYBottom = scale*(this.conf.y + this.height);
+  var cYMid = (cYTop + cYBottom)/2;
+  
+  p = rotatedTranslateTransform(cXLeft,cYMid, ang, x0,y0);
+  transforms.compositionRotateLeft = "translate("+ p[0] + ","+ p[1] +") "+
+                                  "rotate("+ this.conf.rotate +")";
+
+  p = rotatedTranslateTransform(cXMid,cYTop, ang, x0,y0);
+  transforms.compositionRotateTop = "translate("+ p[0] + ","+ p[1] +") "+
+                                  "rotate("+ (this.conf.rotate + 90) +")";
+
+  p = rotatedTranslateTransform(cXRight,cYMid, ang, x0,y0);
+  transforms.compositionRotateRight = "translate("+ p[0] + ","+ p[1] +") "+
+                                  "rotate("+ (this.conf.rotate + 180) +")";
+
+  p = rotatedTranslateTransform(cXMid,cYBottom, ang, x0,y0);
+  transforms.compositionRotateBottom = "translate("+ p[0] + ","+ p[1] +") "+
+                                  "rotate("+ (this.conf.rotate - 90) +")";
+                                  
   return transforms;
 }
 
@@ -248,15 +280,25 @@ Composition.prototype.updateControls = function(){
   this.imgRotateHandleRight.setAttribute("transform", transforms.imageRotateRight);
   this.imgRotateHandleBottom.setAttribute("transform", transforms.imageRotateBottom);
   this.imgRotateHandleLeft.setAttribute("transform", transforms.imageRotateLeft);
-  this.stickerRotateHandle.setAttribute("transform", transforms.compositionRotate1);
+  
+  this.stickerRotateHandleTop.setAttribute("transform", transforms.compositionRotateTop);
+  this.stickerRotateHandleRight.setAttribute("transform", transforms.compositionRotateRight);
+  this.stickerRotateHandleBottom.setAttribute("transform", transforms.compositionRotateBottom);
+  this.stickerRotateHandleLeft.setAttribute("transform", transforms.compositionRotateLeft);
 }
 
 Composition.prototype.generateControls = function(){
-  this.controls = createEl("g", {
+  this.imageControls = createEl("g", {
     class: "controls",
     parent: stickerCanary.ctrlLayer
   });
-  this.controls.setAttribute("visibility", "hidden");
+  this.imageControls.setAttribute("visibility", "hidden");
+
+  this.compositionControls = createEl("g", {
+    class: "controls",
+    parent: stickerCanary.ctrlLayer
+  });
+  this.compositionControls.setAttribute("visibility", "hidden");
 
   var self = this;
   ajaxGet(
@@ -272,21 +314,29 @@ Composition.prototype.generateControls = function(){
         self.imgResizeHandleTopR = imgResizeIcon.cloneNode(true);
         self.imgResizeHandleBottomL = imgResizeIcon.cloneNode(true);
         self.imgResizeHandleBottomR = imgResizeIcon.cloneNode(true);
+
         self.imgRotateHandleTop = imgRotateIcon.cloneNode(true);
         self.imgRotateHandleRight = imgRotateIcon.cloneNode(true);
         self.imgRotateHandleBottom = imgRotateIcon.cloneNode(true);
         self.imgRotateHandleLeft = imgRotateIcon.cloneNode(true);
-        self.stickerRotateHandle = stickerRotateIcon;
+
+        self.stickerRotateHandleTop = stickerRotateIcon.cloneNode(true);
+        self.stickerRotateHandleRight = stickerRotateIcon.cloneNode(true);
+        self.stickerRotateHandleBottom = stickerRotateIcon.cloneNode(true);
+        self.stickerRotateHandleLeft = stickerRotateIcon.cloneNode(true);
         
-        self.controls.appendChild( self.imgResizeHandleTopL );
-        self.controls.appendChild( self.imgResizeHandleTopR );
-        self.controls.appendChild( self.imgResizeHandleBottomL );
-        self.controls.appendChild( self.imgResizeHandleBottomR );
-        self.controls.appendChild( self.imgRotateHandleTop );
-        self.controls.appendChild( self.imgRotateHandleRight );
-        self.controls.appendChild( self.imgRotateHandleBottom );
-        self.controls.appendChild( self.imgRotateHandleLeft );
-        self.controls.appendChild( stickerRotateIcon );
+        self.imageControls.appendChild( self.imgResizeHandleTopL );
+        self.imageControls.appendChild( self.imgResizeHandleTopR );
+        self.imageControls.appendChild( self.imgResizeHandleBottomL );
+        self.imageControls.appendChild( self.imgResizeHandleBottomR );
+        self.imageControls.appendChild( self.imgRotateHandleTop );
+        self.imageControls.appendChild( self.imgRotateHandleRight );
+        self.imageControls.appendChild( self.imgRotateHandleBottom );
+        self.imageControls.appendChild( self.imgRotateHandleLeft );
+        self.compositionControls.appendChild( self.stickerRotateHandleTop );
+        self.compositionControls.appendChild( self.stickerRotateHandleRight );
+        self.compositionControls.appendChild( self.stickerRotateHandleBottom );
+        self.compositionControls.appendChild( self.stickerRotateHandleLeft );
 
         function pointerSVGCoordinates(e){
           var CTM = stickerCanary.albumLayer.getScreenCTM();

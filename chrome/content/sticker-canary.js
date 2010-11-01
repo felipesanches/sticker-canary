@@ -9,6 +9,7 @@ stickerCanary.init = function() {
   chromeDir = new Dir(dirUtils.getChromeDir());
   this.appDir = chromeDir.parent;
   //alert(this.appDir)//.append("xxx") )
+  stickerCanary.setCompositionEditMode();
 }
 
 stickerCanary.getUnit = function(value) {
@@ -185,4 +186,29 @@ stickerCanary.setZoomLevel = function(scale){
     this.compositions[c].updateControls();
   }
 }
+
+
+stickerCanary.compositionEditMode = 1;
+stickerCanary.imageEditMode = 2;
+stickerCanary.BackgroundImageEditMode = 3;
+
+stickerCanary.setCompositionEditMode = function(){
+  stickerCanary.editMode = stickerCanary.compositionEditMode;
+  if (compositions_visible && Composition.selectedComposition)
+      Composition.selectedComposition.showHandles();
+}
+
+stickerCanary.setImageEditMode = function(){
+  stickerCanary.editMode = stickerCanary.imageEditMode;
+  if (compositions_visible && Composition.selectedComposition)
+      Composition.selectedComposition.showHandles();
+}
+
+stickerCanary.setBakgroundImageEditMode = function(){
+  stickerCanary.editMode = stickerCanary.backgroundImageEditMode;
+  if (compositions_visible && Composition.selectedComposition)
+      Composition.selectedComposition.showHandles();
+
+}
+
 

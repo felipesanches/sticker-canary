@@ -56,12 +56,12 @@
       <tooltip id="pictures-tooltip" orient="vertical">
         <label value="Edit pictures positioning"/>
       </tooltip>
-      <toolbarbutton image="icons/edit-picture.png" tooltip="pictures-tooltip" oncommand=""/>
+      <toolbarbutton image="icons/edit-picture.png" tooltip="pictures-tooltip" oncommand="stickerCanary.setImageEditMode()"/>
 
       <tooltip id="compositions-tooltip">
         <label value="Edit pictures positioning"/>
       </tooltip>
-      <toolbarbutton image="icons/edit-composition.png" tooltip="compositions-tooltip" oncommand=""/>
+      <toolbarbutton image="icons/edit-composition.png" tooltip="compositions-tooltip" oncommand="stickerCanary.setCompositionEditMode()"/>
 
       <tooltip id="togglecompositions-tooltip">
         <label value="Toggle display of sticker compositions"/>
