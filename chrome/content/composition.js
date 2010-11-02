@@ -200,7 +200,7 @@ const PI = 3.1415;
 Composition.prototype.serializeControlsTransform = function(scale){
   var x0 = scale*(this.conf.x + this.width/2);
   var y0 = scale*(this.conf.y + this.height/2);
-  var ang = this.conf.transform.rotate * 2*PI/360;
+  var ang = (this.conf.transform.rotate + this.conf.rotate) * 2*PI/360;
   var transforms = {};
 
   var XLeft = scale*(this.conf.x + this.conf.transform.x);
@@ -212,35 +212,35 @@ Composition.prototype.serializeControlsTransform = function(scale){
 
   var p = rotatedTranslateTransform(XLeft,YTop, ang, x0,y0);
   transforms.imageResizeTopL = "translate("+ p[0] + ","+ p[1] +") " +
-                            "rotate("+ this.conf.transform.rotate +") ";
+                            "rotate("+ (this.conf.transform.rotate + this.conf.rotate) +") ";
 
   p = rotatedTranslateTransform(XRight,YTop, ang, x0,y0);
   transforms.imageResizeTopR = "translate("+ p[0] + ","+ p[1] +") " +
-                            "rotate("+ (this.conf.transform.rotate+90) +") ";
+                            "rotate("+ (this.conf.transform.rotate + this.conf.rotate + 90) +") ";
 
   p = rotatedTranslateTransform(XLeft,YBottom, ang, x0,y0);
   transforms.imageResizeBottomL = "translate("+ p[0] + ","+ p[1] +") " +
-                            "rotate("+ (this.conf.transform.rotate-90) +") ";
+                            "rotate("+ (this.conf.transform.rotate + this.conf.rotate - 90) +") ";
 
   p = rotatedTranslateTransform(XRight,YBottom, ang, x0,y0);
   transforms.imageResizeBottomR = "translate("+ p[0] + ","+ p[1] +") " +
-                            "rotate("+ (this.conf.transform.rotate+180) +") ";
+                            "rotate("+ (this.conf.transform.rotate + this.conf.rotate + 180) +") ";
   
   p = rotatedTranslateTransform(XMid,YTop, ang, x0,y0);
   transforms.imageRotateTop = "translate("+ p[0] + ","+ p[1] +") " +
-                            "rotate("+ this.conf.transform.rotate +")";
+                            "rotate("+ (this.conf.transform.rotate + this.conf.rotate) +")";
 
   p = rotatedTranslateTransform(XRight,YMid, ang, x0,y0);
   transforms.imageRotateRight = "translate("+ p[0] + ","+ p[1] +") " +
-                            "rotate("+ (this.conf.transform.rotate + 90) +")";
+                            "rotate("+ (this.conf.transform.rotate + this.conf.rotate + 90) +")";
 
   p = rotatedTranslateTransform(XMid,YBottom, ang, x0,y0);
   transforms.imageRotateBottom = "translate("+ p[0] + ","+ p[1] +") " +
-                            "rotate("+ (this.conf.transform.rotate + 180) +")";
+                            "rotate("+ (this.conf.transform.rotate + this.conf.rotate + 180) +")";
 
   p = rotatedTranslateTransform(XLeft,YMid, ang, x0,y0);
   transforms.imageRotateLeft = "translate("+ p[0] + ","+ p[1] +") " +
-                            "rotate("+ (this.conf.transform.rotate - 90) +")";
+                            "rotate("+ (this.conf.transform.rotate + this.conf.rotate - 90) +")";
 
   ang = this.conf.rotate * 2*PI/360;
 
@@ -357,7 +357,8 @@ Composition.prototype.generateControls = function(){
 
         document.addEventListener("mousemove", function(e){
           if(self.dragImage){
-            var ang = self.conf.transform.rotate * 2*PI/360;
+            var ang = (self.conf.rotate + self.conf.transform.rotate) * 2*PI/360;
+            //var ang = (self.conf.rotate) * 2*PI/360;
             dx = (e.pageX - self.initialDragX)/stickerCanary.currentScale;
             dy = (e.pageY - self.initialDragY)/stickerCanary.currentScale;
             delta = rotatedTranslateTransform(dx,dy,-ang, 0,0);
