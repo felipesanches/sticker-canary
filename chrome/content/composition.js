@@ -390,12 +390,10 @@ Composition.prototype.generateControls = function(){
           }
 
           if(self.dragComposition){
-            var ang = self.conf.rotate * 2*PI/360;
             dx = (e.pageX - self.initialDragX)/stickerCanary.currentScale;
             dy = (e.pageY - self.initialDragY)/stickerCanary.currentScale;
-            delta = rotatedTranslateTransform(dx,dy,-ang, 0,0);
-            self.conf.x += delta[0];
-            self.conf.y += delta[1];
+            self.conf.x += dx;
+            self.conf.y += dy;
             self.initialDragX = e.pageX;
             self.initialDragY = e.pageY;
             self.updateCompositionTransform();
