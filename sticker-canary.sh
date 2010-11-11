@@ -1,13 +1,19 @@
 #!/bin/sh
 
-if which xulrunner; then
-  xulrunner --app application.ini -jsconsole
-else
-  if which firefox; then
-    firefox --app application.ini -jsconsole
-  else
-    echo "Ups... I don't find a xulrunner. :-("
-    zenity --error --title="Sticker Canary" \
-           --text="Ups...  :-(\n\nI don't find a xulrunner to run Sticker Canary."
+runner_found=false
+
+for runner in xulrunner       \
+              xulrunner-1.9.1 \
+              xulrunner-1.9.2 \
+              xulrunner-1.9.3 \
+              firefox; do
+  if ( ! $runner_found && which $runner >/dev/null ); then
+    runner_found=true
+    echo "Running with $runner"
+    if ! $runner --app application.ini -jsconsole; then
+      echo "Ups... $runner exit with error. :-("
+      zenity --error --title="Sticker Canary" \
+             --text="Ups...  :-(\n\n$runner exit with error."
+    fi
   fi
-fi
+done
